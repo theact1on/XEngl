@@ -1,3 +1,7 @@
+# IGNORE LIST OF PROJECT FILES
+/bin/
+/build/
+/.vscode/
 # Prerequisites
 *.d
 
