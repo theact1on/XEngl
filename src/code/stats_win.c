@@ -31,3 +31,18 @@ void stats_win(GtkWidget* widget, gpointer data)
     gtk_widget_show_all(window);
     return;
 }
+
+void setup_table(GtkWidget* treeview)
+{
+    GtkCellRenderer* renderer;
+    GtkTreeViewColumn* column;
+
+    char* names_columns[4] = {"Дата&Время", "Отгаданных слов", "Всего слов", "% успешных ответов"};
+
+    for (int i = 0; i < 4; i++) {
+        renderer = gtk_cell_renderer_text_new();
+        column = gtk_tree_view_column_new_with_attributes(names_columns[i], renderer, "text", i, NULL);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+    }
+    return;
+}
