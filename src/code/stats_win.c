@@ -3,15 +3,16 @@
 void stats_win(GtkWidget* widget, gpointer data)
 {
     GtkWidget* window = (GtkWidget*)data;
-    GtkWidget *stats_box, *btn_box, *btn_back, *btn_del_stats;
+    GtkWidget *stats_box, *btn_box, *btn_back, *btn_del_stats, *treeview, *scrolled_win;
     GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    GtkListStore* store;
 
     gtk_container_remove(GTK_CONTAINER(window), main_box);
     stats_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), stats_box);
 
     btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_container_add(GTK_CONTAINER(stats_box), btn_box);
+    gtk_box_pack_end(GTK_BOX(stats_box), btn_box, FALSE, FALSE, 0);
 
     btn_back = gtk_button_new_with_label("Назад");
     gtk_widget_set_margin_bottom(btn_back, 10);
@@ -21,6 +22,18 @@ void stats_win(GtkWidget* widget, gpointer data)
     btn_del_stats = gtk_button_new_with_label("Обнулить статистику");
     gtk_widget_set_margin_bottom(btn_del_stats, 10);
     gtk_box_pack_end(GTK_BOX(btn_box), btn_del_stats, TRUE, TRUE, 15);
+
+    treeview = gtk_tree_view_new();
+    setup_table(treeview);
+
+    scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_set_border_width(GTK_CONTAINER(scrolled_win), 15);
+    gtk_box_pack_start(GTK_BOX(stats_box), scrolled_win, TRUE, TRUE, 0);
+
+    store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
+    gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(store));
+    gtk_container_add(GTK_CONTAINER(scrolled_win), treeview);
 
     gtk_widget_show_all(stats_box);
 
