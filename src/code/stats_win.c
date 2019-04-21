@@ -3,13 +3,17 @@
 void stats_win(GtkWidget* widget, gpointer data)
 {
     GtkWidget* window = (GtkWidget*)data;
-    GtkWidget *stats_box, *btn_box, *btn_back, *btn_del_stats, *treeview, *scrolled_win;
+    GtkWidget *stats_box, *btn_box, *btn_back, *btn_del_stats, *treeview, *scrolled_win, *label;
     GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
     GtkListStore* store;
 
     gtk_container_remove(GTK_CONTAINER(window), main_box);
     stats_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), stats_box);
+
+    label = gtk_label_new(NULL);
+    gtk_label_set_markup(GTK_LABEL(label), "<span size=\"25000\">Статистика</span>");
+    gtk_box_pack_start(GTK_BOX(stats_box), label, FALSE, FALSE, 30);
 
     btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_end(GTK_BOX(stats_box), btn_box, FALSE, FALSE, 0);
