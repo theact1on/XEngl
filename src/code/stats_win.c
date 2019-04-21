@@ -3,7 +3,7 @@
 void stats_win(GtkWidget* widget, gpointer data)
 {
     GtkWidget* window = (GtkWidget*)data;
-    GtkWidget *stats_box, *btn_box, *btn_back, *btn_del_stats, *treeview, *scrolled_win, *label;
+    GtkWidget *stats_box, *btn_box, *btn_back, *btn_del_stats, *treeview, *scrolled_win, *label, *spinner;
     GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
     GtkListStore* store;
     GtkTreeIter iter;
@@ -40,6 +40,13 @@ void stats_win(GtkWidget* widget, gpointer data)
     gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(store));
     gtk_container_add(GTK_CONTAINER(scrolled_win), treeview);
 
+    spinner = gtk_spinner_new();
+    gtk_box_pack_end(GTK_BOX(stats_box), spinner, TRUE, TRUE, 30);
+
+    gtk_widget_show(spinner);
+    gtk_widget_show(stats_box);
+    gtk_spinner_start(GTK_SPINNER(spinner));
+
     FILE* stats = fopen("data/stats.dat", "rb");
     if (stats == NULL) {
         stats = fopen("data/stats.dat", "wb");
@@ -63,6 +70,8 @@ void stats_win(GtkWidget* widget, gpointer data)
     fclose(stats);
     stats = NULL;
 
+    g_object_unref(store);
+    gtk_widget_destroy(spinner);
     gtk_widget_show_all(stats_box);
 
     gtk_main();
