@@ -9,4 +9,5 @@ struct stats_rec {
 };
 void stats_win(GtkWidget* widget, gpointer data);
 void setup_table(GtkWidget* treeview);
+void del_stats(GtkWidget* widget, gpointer data);
 #endif

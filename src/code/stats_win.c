@@ -40,6 +40,8 @@ void stats_win(GtkWidget* widget, gpointer data)
     gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(store));
     gtk_container_add(GTK_CONTAINER(scrolled_win), treeview);
 
+    g_signal_connect(G_OBJECT(btn_del_stats), "clicked", G_CALLBACK(del_stats), (gpointer)store);
+
     spinner = gtk_spinner_new();
     gtk_box_pack_end(GTK_BOX(stats_box), spinner, TRUE, TRUE, 30);
 
@@ -94,5 +96,14 @@ void setup_table(GtkWidget* treeview)
         column = gtk_tree_view_column_new_with_attributes(names_columns[i], renderer, "text", i, NULL);
         gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
     }
+    return;
+}
+
+void del_stats(GtkWidget* widget, gpointer data)
+{
+    GtkListStore* store = (GtkListStore*)data;
+    gtk_list_store_clear(store);
+    remove("data/stats.dat");
+    gtk_widget_set_sensitive(widget, FALSE);
     return;
 }
