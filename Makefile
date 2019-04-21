@@ -5,10 +5,13 @@ GTK_CFLAGS =  pkg-config --cflags gtk+-3.0
 
 all: dirs bin/exengl
 
-bin/exengl: build/code/main.o
+bin/exengl: build/code/main.o build/code/stats_win.o
 	$(COMPILER) $(FLAGS) `$(GTK_CFLAGS)` -o $@ $^ `$(GTK_LIBS)`
 
 build/code/main.o: src/code/main.c
+	$(COMPILER) $(FLAGS) `$(GTK_CFLAGS)`  -c -o $@ $< `$(GTK_LIBS)`
+
+build/code/stats_win.o: src/code/stats_win.c
 	$(COMPILER) $(FLAGS) `$(GTK_CFLAGS)`  -c -o $@ $< `$(GTK_LIBS)`
 
 dirs:
