@@ -1,21 +1,29 @@
-COMPILER = gcc
-FLAGS = -std=gnu11 -Wall -Werror
-GTK_LIBS = pkg-config --libs gtk+-3.0
-GTK_CFLAGS =  pkg-config --cflags gtk+-3.0
+COMPILER   := gcc
+FLAGS      := -std=gnu11 -Wall -Werror -o
+GTK_LIBS   := pkg-config --libs gtk+-3.0
+GTK_CFLAGS :=  pkg-config --cflags gtk+-3.0
+SRC        := src/code
+BUILD      := build/code
 
-all: dirs bin/exengl
 
-bin/exengl: build/code/main.o build/code/stats_win.o
-	$(COMPILER) $(FLAGS) `$(GTK_CFLAGS)` -o $@ $^ `$(GTK_LIBS)`
+all: dirs bin/XEngl
 
-build/code/main.o: src/code/main.c
-	$(COMPILER) $(FLAGS) `$(GTK_CFLAGS)`  -c -o $@ $< `$(GTK_LIBS)`
+-include $(BUILD)/*.d
 
-build/code/stats_win.o: src/code/stats_win.c
-	$(COMPILER) $(FLAGS) `$(GTK_CFLAGS)`  -c -o $@ $< `$(GTK_LIBS)`
+bin/XEngl: $(BUILD)/main.o $(BUILD)/stats_win.o $(BUILD)/vocabulary.o
+	$(COMPILER) `$(GTK_CFLAGS)` $(FLAGS) $@ $^ `$(GTK_LIBS)`
+
+$(BUILD)/main.o: $(SRC)/main.c
+	$(COMPILER) `$(GTK_CFLAGS)` -MMD -c $(FLAGS) $@ $< `$(GTK_LIBS)`
+
+$(BUILD)/stats_win.o: $(SRC)/stats_win.c
+	$(COMPILER) `$(GTK_CFLAGS)` -MMD -c $(FLAGS) $@ $< `$(GTK_LIBS)`
+
+$(BUILD)/vocabulary.o: $(SRC)/vocabulary.c
+	$(COMPILER) `$(GTK_CFLAGS)` -MMD -c $(FLAGS) $@ $< `$(GTK_LIBS)`
 
 dirs:
-	mkdir -p build/code
+	mkdir -p $(BUILD)
 	mkdir -p bin
 
 clean:
