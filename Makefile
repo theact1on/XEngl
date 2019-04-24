@@ -1,5 +1,5 @@
 COMPILER   := gcc
-FLAGS      := -std=gnu11 -Wall -Werror -o
+FLAGS      := -std=gnu11 -Wall -o
 GTK_LIBS   := pkg-config --libs gtk+-3.0
 GTK_CFLAGS :=  pkg-config --cflags gtk+-3.0
 SRC        := src/code
