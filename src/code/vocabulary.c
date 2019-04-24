@@ -1,4 +1,27 @@
 #include "vocabulary.h"
+void read_from_bfile(GtkListStore* model)
+{
+    /* Чтение из файла */
+    struct Item* item;
+    item = (struct Item*)malloc(sizeof(struct Item));
+    GtkTreeIter iter;
+    FILE* file = fopen("data/voc.dat", "rb");
+
+    if (file == NULL) {
+        file = fopen("data/voc.dat", "wb");
+        fclose(file);
+        file = fopen("data/voc.dat", "rb");
+    }
+    fread(item, sizeof(struct Item), 1, file);
+    while (file != NULL && !feof(file)) {
+        gtk_list_store_append(model, &iter);
+        gtk_list_store_set(model, &iter, 0, item->word, 1, item->translation, -1);
+        gtk_main_iteration_do(gtk_events_pending());
+        fread(item, sizeof(struct Item), 1, file);
+    }
+    fclose(file);
+    file = NULL;
+}
 
 void vocabulary_win(GtkWidget* widget, gpointer data)
 {
@@ -78,6 +101,8 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_widget_show(spinner);
     gtk_widget_show(voc_box);
     gtk_spinner_start(GTK_SPINNER(spinner));
+
+    read_from_bfile(model);
 
     gtk_widget_destroy(spinner);
     gtk_widget_show_all(voc_box);
