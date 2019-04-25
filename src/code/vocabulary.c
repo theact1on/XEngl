@@ -22,7 +22,52 @@ void read_from_bfile(GtkListStore* model)
     fclose(file);
     file = NULL;
 }
+void add_item(GtkWidget* button, gpointer data)
+{
+    GtkTreeView* treeview = (GtkTreeView*)data;
+    GtkTreeIter current, iter;
+    struct Item* item;
+    item = (struct Item*)malloc(sizeof(struct Item));
 
+    GtkTreeModel* model = gtk_tree_view_get_model(treeview);
+    GtkTreeViewColumn* column;
+
+    /* Вставка новой строки после текущей */
+    GtkTreePath* path;
+    gtk_tree_view_get_cursor(treeview, &path, NULL);
+
+    if (path) {
+        gtk_tree_model_get_iter(model, &current, path);
+        gtk_tree_path_free(path);
+        gtk_list_store_insert_after(GTK_LIST_STORE(model), &iter, &current);
+    } else {
+        gtk_list_store_insert(GTK_LIST_STORE(model), &iter, -1);
+    }
+
+    /* Установка данных для новой строки*/
+    strcpy(item->word, "<Слово>");
+    strcpy(item->translation, "<Перевод>");
+
+    gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, item->word, 1, item->translation, -1);
+
+    /* Перемещение выделения на созданную строку */
+    path = gtk_tree_model_get_path(model, &iter);
+    column = gtk_tree_view_get_column(treeview, 0);
+    gtk_tree_view_set_cursor(treeview, path, column, FALSE);
+
+    gtk_tree_path_free(path);
+}
+static void remove_item(GtkWidget* widget, gpointer data)
+{
+    GtkTreeView* treeview = (GtkTreeView*)data;
+    GtkTreeIter iter;
+
+    GtkTreeModel* model = gtk_tree_view_get_model(treeview);
+    GtkTreeSelection* selection = gtk_tree_view_get_selection(treeview);
+
+    if (gtk_tree_selection_get_selected(selection, NULL, &iter))
+        gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+}
 void vocabulary_win(GtkWidget* widget, gpointer data)
 {
     GtkWidget* window = (GtkWidget*)data;
@@ -47,6 +92,7 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_box_pack_start(GTK_BOX(btns_box), btns_box2, FALSE, FALSE, 0);
 
     btn_add_rec = gtk_button_new_with_label("Добавить запись");
+
     gtk_widget_set_name(btn_add_rec, "btn_add");
     gtk_widget_set_margin_bottom(btn_add_rec, 10);
     gtk_box_pack_start(GTK_BOX(btns_box1), btn_add_rec, TRUE, TRUE, 15);
@@ -69,7 +115,7 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_box_pack_start(GTK_BOX(voc_box), sw, TRUE, TRUE, 0);
 
     treeview = gtk_tree_view_new();
-    /* Задание модели */
+    /* Задание модели таблицы */
     GtkListStore* model;
     model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 
@@ -89,8 +135,8 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     }
 
     /* Нажатия на кнопки */
-    // g_signal_connect(G_OBJECT(btn_add_rec), "clicked", NULL, NULL);
-    // g_signal_connect(G_OBJECT(btn_rem_rec), "clicked", NULL, NULL);
+    g_signal_connect(G_OBJECT(btn_add_rec), "clicked", G_CALLBACK(add_item), treeview);
+    g_signal_connect(G_OBJECT(btn_rem_rec), "clicked", G_CALLBACK(remove_item), treeview);
     g_signal_connect(G_OBJECT(btn_back), "clicked", gtk_main_quit, NULL);
     // g_signal_connect(G_OBJECT(btn_save), "clicked", NULL, NULL);
 
