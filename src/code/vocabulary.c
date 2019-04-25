@@ -57,7 +57,8 @@ void add_item(GtkWidget* button, gpointer data)
 
     gtk_tree_path_free(path);
 }
-static void remove_item(GtkWidget* widget, gpointer data)
+
+void remove_item(GtkWidget* widget, gpointer data)
 {
     GtkTreeView* treeview = (GtkTreeView*)data;
     GtkTreeIter iter;
@@ -68,6 +69,34 @@ static void remove_item(GtkWidget* widget, gpointer data)
     if (gtk_tree_selection_get_selected(selection, NULL, &iter))
         gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 }
+
+void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gchar* new_text, gpointer data)
+{
+    struct Item* item;
+    item = (struct Item*)malloc(sizeof(struct Item));
+
+    GtkTreeModel* model = (GtkTreeModel*)data;
+
+    GtkTreePath* path = gtk_tree_path_new_from_string(path_string);
+    GtkTreeIter iter;
+    gtk_tree_model_get_iter(model, &iter, path);
+    gtk_tree_path_free(path);
+
+    gint column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(cell), "column"));
+
+    switch (column) {
+    case 0: {
+        strcpy(item->word, new_text);
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, column, item->word, -1);
+    } break;
+
+    case 1: {
+        strcpy(item->translation, new_text);
+        gtk_list_store_set(GTK_LIST_STORE(model), &iter, column, item->translation, -1);
+    } break;
+    }
+}
+
 void vocabulary_win(GtkWidget* widget, gpointer data)
 {
     GtkWidget* window = (GtkWidget*)data;
@@ -92,8 +121,6 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_box_pack_start(GTK_BOX(btns_box), btns_box2, FALSE, FALSE, 0);
 
     btn_add_rec = gtk_button_new_with_label("Добавить запись");
-
-    gtk_widget_set_name(btn_add_rec, "btn_add");
     gtk_widget_set_margin_bottom(btn_add_rec, 10);
     gtk_box_pack_start(GTK_BOX(btns_box1), btn_add_rec, TRUE, TRUE, 15);
 
@@ -126,8 +153,12 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     char* names_columns[2] = {"Слово", "Перевод"};
     GtkCellRenderer* renderer;
     GtkTreeViewColumn* column;
-    renderer = gtk_cell_renderer_text_new();
+
     for (int i = 0; i < 2; i++) {
+        renderer = gtk_cell_renderer_text_new();
+        g_object_set(renderer, "editable", TRUE, NULL); // Редактирование строки
+        g_signal_connect(renderer, "edited", G_CALLBACK(cell_edited), GTK_TREE_MODEL(model));
+        g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(i));
         column = gtk_tree_view_column_new_with_attributes(names_columns[i], renderer, "text", i, NULL);
         gtk_tree_view_column_set_alignment(column, 0.5); // Выравнивание по центру
         gtk_tree_view_column_set_expand(column, TRUE);   // Равное разбиение между столбцами
