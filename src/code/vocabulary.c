@@ -1,4 +1,5 @@
 #include "vocabulary.h"
+
 void read_from_bfile(GtkListStore* model)
 {
     /* Чтение из файла */
@@ -22,6 +23,36 @@ void read_from_bfile(GtkListStore* model)
     fclose(file);
     file = NULL;
 }
+
+void write_to_bfile(GtkWidget* button, gpointer data)
+{
+    struct Item item;
+
+    GtkTreeView* treeview = (GtkTreeView*)data;
+    GtkTreeModel* model = gtk_tree_view_get_model(treeview);
+
+    GtkTreeIter iter;
+    gtk_tree_model_get_iter_first(model, &iter);
+
+    gboolean valid;
+    valid = gtk_tree_model_get_iter_first(model, &iter);
+    FILE* file;
+    gchar* word;
+    gchar* translation;
+    file = fopen("data/temp.dat", "wb"); // открытие бинарного файла для записи
+    while (valid) {
+        gtk_tree_model_get(model, &iter, 0, &(word), 1, &(translation), -1);
+        strcpy(item.word, word);
+        strcpy(item.translation, translation);
+        g_print("%s\t%s\n", word, translation);
+        fwrite(&item, sizeof(item), 1, file); // запись в файл структуры
+        valid = gtk_tree_model_iter_next(model, &iter);
+    }
+    fclose(file);
+    remove("data/voc.dat");
+    rename("data/temp.dat", "data/voc.dat");
+}
+
 void add_item(GtkWidget* button, gpointer data)
 {
     GtkTreeView* treeview = (GtkTreeView*)data;
@@ -35,7 +66,6 @@ void add_item(GtkWidget* button, gpointer data)
     /* Вставка новой строки после текущей */
     GtkTreePath* path;
     gtk_tree_view_get_cursor(treeview, &path, NULL);
-
     if (path) {
         gtk_tree_model_get_iter(model, &current, path);
         gtk_tree_path_free(path);
@@ -83,7 +113,7 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
     gtk_tree_path_free(path);
 
     gint column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(cell), "column"));
-
+    g_print("%d     %p     %s      %p\n", column, cell, path_string, data);
     switch (column) {
     case 0: {
         strcpy(item->word, new_text);
@@ -169,7 +199,7 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     g_signal_connect(G_OBJECT(btn_add_rec), "clicked", G_CALLBACK(add_item), treeview);
     g_signal_connect(G_OBJECT(btn_rem_rec), "clicked", G_CALLBACK(remove_item), treeview);
     g_signal_connect(G_OBJECT(btn_back), "clicked", gtk_main_quit, NULL);
-    // g_signal_connect(G_OBJECT(btn_save), "clicked", NULL, NULL);
+    g_signal_connect(G_OBJECT(btn_save), "clicked", G_CALLBACK(write_to_bfile), treeview);
 
     /* Спиннер */
     GtkWidget* spinner = gtk_spinner_new();
