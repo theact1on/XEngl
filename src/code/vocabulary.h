@@ -2,6 +2,7 @@
 #define VOCABULARY_H
 #include <gtk/gtk.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct Item {
     char word[100];

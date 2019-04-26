@@ -1,5 +1,5 @@
 COMPILER   := gcc
-FLAGS      := -std=gnu11 -Wall -o
+FLAGS      := -std=gnu11 -Werror -o
 GTK_LIBS   := pkg-config --libs gtk+-3.0
 GTK_CFLAGS :=  pkg-config --cflags gtk+-3.0
 SRC        := src/code
@@ -25,6 +25,7 @@ $(BUILD)/vocabulary.o: $(SRC)/vocabulary.c
 dirs:
 	mkdir -p $(BUILD)
 	mkdir -p bin
+	mkdir -p data
 
 clean:
 	rm -rf build bin
