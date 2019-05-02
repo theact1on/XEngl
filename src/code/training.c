@@ -4,6 +4,7 @@
 
 void training_win(GtkWidget* widget, gpointer data)
 {
+    task_function types_of_task[2] = {four_buttons_task, enter_translate_task};
     GtkWidget* window = (GtkWidget*)data;
     GtkWidget *tr_box, *label_name_window, *task_box, *button_box, *btn_next, *btn_end;
     GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
