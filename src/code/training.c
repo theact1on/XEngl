@@ -102,6 +102,28 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
         answer_buttons[3] = gtk_button_new_with_label(its.word);
     }
+
+    for (int i = 4; i < 7; i++) {
+        do {
+            rand_word[i] = rand() % 5;
+        } while (rand_word[i] == rand_word[i - 1] || rand_word[i] == rand_word[i - 2] || rand_word[i] == rand_word[i - 3]);
+        fseek(question_word, rand_word[i] * sizeof(struct Item), 0);
+        fread(&fail, sizeof(struct Item), 1, question_word);
+
+        if (type_its == 1) {
+            answer_buttons[i - 4] = gtk_button_new_with_label(fail.translation);
+        } else {
+            answer_buttons[i - 4] = gtk_button_new_with_label(fail.word);
+        }
+
+        // g_signal_connect(G_OBJECT(answer_buttons[i - 4]), "clicked", G_CALLBACK(failed_answer), list);
+    }
+    // g_signal_connect(G_OBJECT(answer_buttons[3]), "clicked", G_CALLBACK(success_answer), list);
+    shuffle_widgets(answer_buttons, 4);
+
+    for (int i = 0; i < 4; i++)
+        gtk_box_pack_start(GTK_BOX(btn_answer_box), answer_buttons[i], TRUE, TRUE, 0);
+    fclose(question_word);
 }
 
 void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
