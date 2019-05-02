@@ -42,3 +42,11 @@ void training_win(GtkWidget* widget, gpointer data)
     gtk_container_add(GTK_CONTAINER(window), main_box);
     gtk_widget_show_all(window);
 }
+
+void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
+{
+}
+
+void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
+{
+}
