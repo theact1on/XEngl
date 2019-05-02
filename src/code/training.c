@@ -4,6 +4,13 @@
 
 void training_win(GtkWidget* widget, gpointer data)
 {
+    srand(time(NULL));
+
+    int num_of_words = 0;
+    int all_count_words = 0;
+    int success_count_words = 0;
+    int breakout = 0;
+
     task_function types_of_task[2] = {four_buttons_task, enter_translate_task};
     GtkWidget* window = (GtkWidget*)data;
     GtkWidget *tr_box, *label_name_window, *task_box, *button_box, *btn_next, *btn_end;
@@ -36,8 +43,22 @@ void training_win(GtkWidget* widget, gpointer data)
     g_signal_connect(G_OBJECT(btn_next), "clicked", gtk_main_quit, NULL);
     gtk_widget_set_sensitive(btn_next, FALSE);
 
-    gtk_widget_show_all(tr_box);
-    gtk_main();
+    while (!breakout) {
+        int rand_type_task = rand() % 2;
+        gtk_container_remove(GTK_CONTAINER(tr_box), task_box);
+        all_count_words++;
+        char bufer[130];
+        sprintf(bufer, "<span size=\"35000\">%d</span>", all_count_words);
+        gtk_label_set_markup(GTK_LABEL(label_name_window), bufer);
+        task_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+        gtk_box_pack_start(GTK_BOX(tr_box), task_box, TRUE, TRUE, 30);
+        gtk_box_reorder_child(GTK_BOX(tr_box), task_box, 1);
+        types_of_task[rand_type_task](GTK_BOX(task_box), num_of_words, &success_count_words, btn_end, btn_next);
+        gtk_widget_set_sensitive(btn_end, FALSE);
+        gtk_widget_set_sensitive(btn_next, FALSE);
+        gtk_widget_show_all(tr_box);
+        gtk_main();
+    }
 
     gtk_widget_destroy(tr_box);
     gtk_container_add(GTK_CONTAINER(window), main_box);
