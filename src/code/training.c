@@ -107,3 +107,15 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
 {
 }
+
+void shuffle_widgets(GtkWidget** arr, int N)
+{
+    srand(time(NULL));
+    for (int i = N - 1; i >= 1; i--) {
+        int j = rand() % (i + 1);
+
+        GtkWidget* tmp = arr[j];
+        arr[j] = arr[i];
+        arr[i] = tmp;
+    }
+}
