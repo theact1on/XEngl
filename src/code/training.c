@@ -67,6 +67,18 @@ void training_win(GtkWidget* widget, gpointer data)
 
 void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
 {
+    srand(time(NULL));
+    GtkWidget *label_word, *btn_answer_box, *answer_buttons[4];
+    struct Item its;
+    struct Item fail;
+
+    label_word = gtk_label_new("LOADING...");
+    gtk_box_pack_start(task_box, label_word, FALSE, FALSE, 0);
+
+    gtk_widget_set_name(label_word, "label_question");
+
+    btn_answer_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 20);
+    gtk_box_pack_start(task_box, btn_answer_box, TRUE, TRUE, 0);
 }
 
 void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
