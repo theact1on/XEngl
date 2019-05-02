@@ -79,6 +79,29 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 
     btn_answer_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 20);
     gtk_box_pack_start(task_box, btn_answer_box, TRUE, TRUE, 0);
+
+    const int NUM_BUTTONS = 7;
+
+    int rand_word[7] = {-1};
+    int type_its = rand() % 2 + 1;
+
+    char bufer[130];
+    rand_word[3] = rand() % 5;
+    FILE* question_word = fopen("data/voc.dat", "rb");
+    fseek(question_word, rand_word[3] * sizeof(struct Item), 0);
+    fread(&its, sizeof(struct Item), 1, question_word);
+    if (type_its == 1) {
+        gtk_label_set_text(GTK_LABEL(label_word), its.word);
+        sprintf(bufer, "<span size=\"35000\">%s</span>", its.word);
+        gtk_label_set_markup(GTK_LABEL(label_word), bufer);
+        answer_buttons[3] = gtk_button_new_with_label(its.translation);
+
+    } else {
+        gtk_label_set_text(GTK_LABEL(label_word), its.translation);
+        sprintf(bufer, "<span size=\"35000\">%s</span>", its.translation);
+        gtk_label_set_markup(GTK_LABEL(label_word), bufer);
+        answer_buttons[3] = gtk_button_new_with_label(its.word);
+    }
 }
 
 void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
