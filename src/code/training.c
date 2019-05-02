@@ -6,7 +6,7 @@ void training_win(GtkWidget* widget, gpointer data)
 {
     srand(time(NULL));
 
-    int num_of_words = 0;
+    int num_of_words = count_words();
     int all_count_words = 0;
     int success_count_words = 0;
     int breakout = 0;
@@ -86,7 +86,7 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
     int type_its = rand() % 2 + 1;
 
     char bufer[130];
-    rand_word[3] = rand() % 5;
+    rand_word[3] = rand() % N_WORDS;
     FILE* question_word = fopen("data/voc.dat", "rb");
     fseek(question_word, rand_word[3] * sizeof(struct Item), 0);
     fread(&its, sizeof(struct Item), 1, question_word);
@@ -105,7 +105,7 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 
     for (int i = 4; i < 7; i++) {
         do {
-            rand_word[i] = rand() % 5;
+            rand_word[i] = rand() % N_WORDS;
         } while (rand_word[i] == rand_word[i - 1] || rand_word[i] == rand_word[i - 2] || rand_word[i] == rand_word[i - 3]);
         fseek(question_word, rand_word[i] * sizeof(struct Item), 0);
         fread(&fail, sizeof(struct Item), 1, question_word);
@@ -128,6 +128,22 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 
 void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
 {
+}
+
+int count_words()
+{
+    FILE* file_count = fopen("data/voc.dat", "rb");
+    struct Item* temp = g_malloc(sizeof(struct Item));
+    int counter = 0;
+    fread(temp, sizeof(struct Item), 1, file_count);
+    while (!feof(file_count)) {
+        counter++;
+        fread(temp, sizeof(struct Item), 1, file_count);
+    }
+    gtk_main_iteration_do(gtk_events_pending());
+    g_free(temp);
+    fclose(file_count);
+    return counter;
 }
 
 void shuffle_widgets(GtkWidget** arr, int N)
