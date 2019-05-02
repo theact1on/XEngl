@@ -67,6 +67,12 @@ void training_win(GtkWidget* widget, gpointer data)
 
 void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
 {
+    GQueue* list;
+    list = g_queue_new();
+    g_queue_push_head(list, success_count_words);
+    g_queue_push_head(list, btn_end);
+    g_queue_push_head(list, btn_next);
+
     srand(time(NULL));
     GtkWidget *label_word, *btn_answer_box, *answer_buttons[4];
     struct Item its;
@@ -90,18 +96,20 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
     FILE* question_word = fopen("data/voc.dat", "rb");
     fseek(question_word, rand_word[3] * sizeof(struct Item), 0);
     fread(&its, sizeof(struct Item), 1, question_word);
+
     if (type_its == 1) {
         gtk_label_set_text(GTK_LABEL(label_word), its.word);
         sprintf(bufer, "<span size=\"35000\">%s</span>", its.word);
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
         answer_buttons[3] = gtk_button_new_with_label(its.translation);
-
     } else {
         gtk_label_set_text(GTK_LABEL(label_word), its.translation);
         sprintf(bufer, "<span size=\"35000\">%s</span>", its.translation);
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
         answer_buttons[3] = gtk_button_new_with_label(its.word);
     }
+
+    g_queue_push_head(list, answer_buttons[3]);
 
     for (int i = 4; i < 7; i++) {
         do {
@@ -115,6 +123,8 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
         } else {
             answer_buttons[i - 4] = gtk_button_new_with_label(fail.word);
         }
+
+        g_queue_push_head(list, answer_buttons[i - 4]);
 
         // g_signal_connect(G_OBJECT(answer_buttons[i - 4]), "clicked", G_CALLBACK(failed_answer), list);
     }
