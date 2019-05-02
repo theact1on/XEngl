@@ -10,7 +10,7 @@ all: dirs bin/XEngl
 
 -include $(BUILD)/*.d
 
-bin/XEngl: $(BUILD)/main.o $(BUILD)/stats_win.o $(BUILD)/vocabulary.o
+bin/XEngl: $(BUILD)/main.o $(BUILD)/stats_win.o $(BUILD)/vocabulary.o $(BUILD)/training.o
 	$(COMPILER) `$(GTK_CFLAGS)` $(FLAGS) $@ $^ `$(GTK_LIBS)`
 
 $(BUILD)/main.o: $(SRC)/main.c
@@ -20,6 +20,9 @@ $(BUILD)/stats_win.o: $(SRC)/stats_win.c
 	$(COMPILER) `$(GTK_CFLAGS)` -MMD -c $(FLAGS) $@ $< `$(GTK_LIBS)`
 
 $(BUILD)/vocabulary.o: $(SRC)/vocabulary.c
+	$(COMPILER) `$(GTK_CFLAGS)` -MMD -c $(FLAGS) $@ $< `$(GTK_LIBS)`
+
+$(BUILD)/training.o: $(SRC)/training.c
 	$(COMPILER) `$(GTK_CFLAGS)` -MMD -c $(FLAGS) $@ $< `$(GTK_LIBS)`
 
 dirs:
