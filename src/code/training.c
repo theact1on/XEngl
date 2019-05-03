@@ -128,7 +128,7 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 
         g_signal_connect(G_OBJECT(answer_buttons[i - 4]), "clicked", G_CALLBACK(failed_answer), list);
     }
-    // g_signal_connect(G_OBJECT(answer_buttons[3]), "clicked", G_CALLBACK(success_answer), list);
+    g_signal_connect(G_OBJECT(answer_buttons[3]), "clicked", G_CALLBACK(success_answer), list);
     shuffle_widgets(answer_buttons, 4);
 
     for (int i = 0; i < 4; i++)
@@ -186,5 +186,27 @@ void failed_answer(GtkWidget* widget, GQueue* list)
     gtk_widget_set_name(widget, "button_failed");
     gtk_widget_set_name(answer_buttons[3], "button_success");
 
+    g_queue_free(list);
+}
+
+void success_answer(GtkWidget* widget, GQueue* list)
+{
+    GtkWidget *btn_next, *btn_end, *answer_buttons[4];
+    GList* child;
+    child = g_queue_peek_head_link(list);
+    for (int i = 0; i < 4; i++) {
+        answer_buttons[i] = (GtkWidget*)(child->data);
+        gtk_widget_set_sensitive(answer_buttons[i], FALSE);
+        child = child->next;
+    }
+    btn_next = (GtkWidget*)(child->data);
+    gtk_widget_set_sensitive(btn_next, TRUE);
+    child = child->next;
+    btn_end = (GtkWidget*)(child->data);
+    gtk_widget_set_sensitive(btn_end, TRUE);
+    child = child->next;
+    gtk_widget_set_name(widget, "button_success");
+    int* success = (int*)(child->data);
+    *success = *success + 1;
     g_queue_free(list);
 }
