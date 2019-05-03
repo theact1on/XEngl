@@ -239,7 +239,7 @@ void check_answer_entry(GtkWidget* widget, GQueue* list)
     child = child->next;
     char* entry = (char*)gtk_entry_get_text(GTK_ENTRY(entry_label));
     char* its_tr = its->word;
-    if (strcmp(its_tr, entry) == 0) {
+    if (strcmp(strlwr(its_tr), strlwr(entry)) == 0) {
         int* success = (int*)(child->data);
         *success = *success + 1;
         gtk_widget_set_name(btn_success, "button_success");
@@ -293,4 +293,16 @@ void success_answer(GtkWidget* widget, GQueue* list)
     int* success = (int*)(child->data);
     *success = *success + 1;
     g_queue_free(list);
+}
+
+char* strlwr(char* str)
+{
+    unsigned char* p = (unsigned char*)str;
+
+    while (*p) {
+        *p = tolower((unsigned char)*p);
+        p++;
+    }
+
+    return str;
 }

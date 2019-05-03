@@ -14,5 +14,7 @@ void failed_answer(GtkWidget* widget, GQueue* list);
 void check_answer_entry(GtkWidget* widget, GQueue* list);
 void success_answer(GtkWidget* widget, GQueue* list);
 int count_words();
+char* settime(struct tm* u);
+char* strlwr(char* str);
 
 #endif
