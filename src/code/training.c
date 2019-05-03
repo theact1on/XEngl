@@ -348,6 +348,43 @@ void results_win(GtkWidget* widget, GQueue* list)
         pecent_words = (float)success_count_words / all_count_words * 100;
     }
 
+    children = gtk_container_get_children(GTK_CONTAINER(tr_box));
+    for (iter = children; iter != NULL; iter = g_list_next(iter))
+        gtk_widget_destroy(GTK_WIDGET(iter->data));
+    g_list_free(children);
+
+    gchar* bufer = (gchar*)g_malloc(200 * sizeof(gchar));
+
+    label_name_window = gtk_label_new(NULL);
+    gtk_label_set_markup(GTK_LABEL(label_name_window), "<span size=\"25000\">Результаты тренировки</span>\n");
+    gtk_box_pack_start(GTK_BOX(tr_box), label_name_window, FALSE, FALSE, 30);
+    gtk_widget_set_name(label_name_window, "label_name_window_results");
+
+    sprintf(bufer, "<span size=\"15000\">Общее кол-во слов</span>\n<span size=\"35000\">%d</span>", all_count_words);
+    label_all_words = gtk_label_new(NULL);
+    gtk_label_set_markup(GTK_LABEL(label_all_words), bufer);
+    gtk_label_set_justify(GTK_LABEL(label_all_words), GTK_JUSTIFY_CENTER);
+    gtk_box_pack_start(GTK_BOX(tr_box), label_all_words, TRUE, TRUE, 30);
+
+    sprintf(bufer, "<span size=\"15000\">Кол-во правильных ответов</span>\n<span size=\"35000\">%d</span>", success_count_words);
+    label_success_words = gtk_label_new(NULL);
+    gtk_label_set_markup(GTK_LABEL(label_success_words), bufer);
+    gtk_label_set_justify(GTK_LABEL(label_success_words), GTK_JUSTIFY_CENTER);
+    gtk_box_pack_start(GTK_BOX(tr_box), label_success_words, TRUE, TRUE, 30);
+
+    sprintf(bufer, "<span size=\"15000\">Процент правильных ответов</span>\n<span size=\"35000\">%.1f\%</span>", pecent_words);
+    label_pecent = gtk_label_new(NULL);
+    gtk_label_set_xalign(GTK_LABEL(label_pecent), 0.5);
+    gtk_label_set_markup(GTK_LABEL(label_pecent), bufer);
+    gtk_label_set_justify(GTK_LABEL(label_pecent), GTK_JUSTIFY_CENTER);
+    gtk_box_pack_start(GTK_BOX(tr_box), label_pecent, TRUE, TRUE, 30);
+
+    btn_to_menu = gtk_button_new_with_label("В главное меню");
+    g_signal_connect(G_OBJECT(btn_to_menu), "clicked", gtk_main_quit, NULL);
+    gtk_box_pack_start(GTK_BOX(tr_box), btn_to_menu, FALSE, FALSE, 0);
+
+    g_free(bufer);
+
     gtk_widget_show_all(tr_box);
     gtk_main();
     gtk_main_quit();
