@@ -11,6 +11,7 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next);
 void shuffle_widgets(GtkWidget** arr, int N);
 void failed_answer(GtkWidget* widget, GQueue* list);
+void check_answer_entry(GtkWidget* widget, GQueue* list);
 void success_answer(GtkWidget* widget, GQueue* list);
 int count_words();
 

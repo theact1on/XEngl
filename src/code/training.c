@@ -183,8 +183,8 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     fclose(question_word);
 
     g_queue_push_head(list, its);
-    // g_signal_connect(G_OBJECT(entry_label), "activate", G_CALLBACK(check_answer_entry), list);
-    // g_signal_connect(G_OBJECT(button_success), "clicked", G_CALLBACK(check_answer_entry), list);
+    g_signal_connect(G_OBJECT(entry_label), "activate", G_CALLBACK(check_answer_entry), list);
+    g_signal_connect(G_OBJECT(button_success), "clicked", G_CALLBACK(check_answer_entry), list);
 }
 
 int count_words()
@@ -213,6 +213,43 @@ void shuffle_widgets(GtkWidget** arr, int N)
         arr[j] = arr[i];
         arr[i] = tmp;
     }
+}
+
+void check_answer_entry(GtkWidget* widget, GQueue* list)
+{
+    GtkWidget *btn_next, *btn_end, *btn_success, *entry_label;
+    struct Item* its;
+    GList* child;
+    child = g_queue_peek_head_link(list);
+
+    its = (struct Item*)(child->data);
+    child = child->next;
+
+    entry_label = (GtkWidget*)(child->data);
+    gtk_widget_set_sensitive(entry_label, FALSE);
+    child = child->next;
+    btn_success = (GtkWidget*)(child->data);
+    gtk_widget_set_sensitive(btn_success, FALSE);
+    child = child->next;
+    btn_next = (GtkWidget*)(child->data);
+    gtk_widget_set_sensitive(btn_next, TRUE);
+    child = child->next;
+    btn_end = (GtkWidget*)(child->data);
+    gtk_widget_set_sensitive(btn_end, TRUE);
+    child = child->next;
+    char* entry = (char*)gtk_entry_get_text(GTK_ENTRY(entry_label));
+    char* its_tr = its->word;
+    if (strcmp(its_tr, entry) == 0) {
+        int* success = (int*)(child->data);
+        *success = *success + 1;
+        gtk_widget_set_name(btn_success, "button_success");
+        gtk_widget_set_name(entry_label, "entry_success");
+    } else {
+        gtk_widget_set_name(btn_success, "button_failed");
+        gtk_widget_set_name(entry_label, "entry_failed");
+    }
+    gtk_widget_set_sensitive(btn_success, FALSE);
+    g_queue_free(list);
 }
 
 void failed_answer(GtkWidget* widget, GQueue* list)
