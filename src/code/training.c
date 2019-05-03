@@ -158,6 +158,22 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     gtk_widget_grab_focus(entry_label);
     gtk_widget_set_name(entry_label, "entry_label");
     gtk_widget_set_halign(entry_label, 0.5);
+
+    struct Item* its = (struct Item*)malloc(sizeof(struct Item));
+
+    int rand_word = rand() % N_WORDS;
+
+    FILE* question_word = fopen("data/voc.dat", "rb");
+    fseek(question_word, rand_word * sizeof(struct Item), 0);
+    fread(its, sizeof(struct Item), 1, question_word);
+    gtk_label_set_text(GTK_LABEL(label_word), its->translation);
+    char bufer[130];
+    sprintf(bufer, "<span size=\"35000\">%s</span>", its->translation);
+    gtk_label_set_markup(GTK_LABEL(label_word), bufer);
+    fclose(question_word);
+
+    // g_signal_connect(G_OBJECT(entry_label), "activate", G_CALLBACK(check_answer_entry), list);
+    // g_signal_connect(G_OBJECT(button_success), "clicked", G_CALLBACK(check_answer_entry), list);
 }
 
 int count_words()
