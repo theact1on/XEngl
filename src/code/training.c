@@ -153,7 +153,7 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     g_queue_push_head(list, btn_end);
     g_queue_push_head(list, btn_next);
 
-    GtkWidget *label_word, *entry_answer_box, *entry_label, *button_success;
+    GtkWidget *label_word, *entry_answer_box, *entry_label, *button_success, *right_word;
     srand(time(NULL));
     label_word = gtk_label_new("LOADING...");
     gtk_box_pack_start(task_box, label_word, FALSE, FALSE, 0);
@@ -162,18 +162,23 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
 
     entry_answer_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 20);
     gtk_box_pack_start(task_box, entry_answer_box, FALSE, FALSE, 0);
+
+    gtk_widget_set_name(entry_answer_box, "entry_answer_box");
+
+    right_word = gtk_label_new(NULL);
+    gtk_box_pack_start(GTK_BOX(entry_answer_box), right_word, FALSE, FALSE, 0);
+
+    gtk_widget_set_name(right_word, "right_word_hide");
+
+    g_queue_push_head(list, right_word);
     button_success = gtk_button_new_with_label("Подтвердить");
     gtk_box_pack_end(GTK_BOX(entry_answer_box), button_success, FALSE, FALSE, 0);
-
-    gtk_widget_set_margin_end(button_success, 120);
-    gtk_widget_set_margin_start(button_success, 120);
 
     g_queue_push_head(list, button_success);
 
     entry_label = gtk_entry_new();
     gtk_box_pack_start(GTK_BOX(entry_answer_box), entry_label, FALSE, FALSE, 0);
     gtk_widget_grab_focus(entry_label);
-    gtk_widget_set_name(entry_label, "entry_label");
     gtk_widget_set_halign(entry_label, 0.5);
 
     g_queue_push_head(list, entry_label);
@@ -226,7 +231,7 @@ void shuffle_widgets(GtkWidget** arr, int N)
 
 void check_answer_entry(GtkWidget* widget, GQueue* list)
 {
-    GtkWidget *btn_next, *btn_end, *btn_success, *entry_label;
+    GtkWidget *btn_next, *btn_end, *btn_success, *entry_label, *right_word;
     struct Item* its;
     GList* child;
     child = g_queue_peek_head_link(list);
@@ -239,6 +244,8 @@ void check_answer_entry(GtkWidget* widget, GQueue* list)
     child = child->next;
     btn_success = (GtkWidget*)(child->data);
     gtk_widget_set_sensitive(btn_success, FALSE);
+    child = child->next;
+    right_word = (GtkWidget*)(child->data);
     child = child->next;
     btn_next = (GtkWidget*)(child->data);
     gtk_widget_set_sensitive(btn_next, TRUE);
@@ -254,6 +261,10 @@ void check_answer_entry(GtkWidget* widget, GQueue* list)
         gtk_widget_set_name(btn_success, "button_success");
         gtk_widget_set_name(entry_label, "entry_success");
     } else {
+        char bufer[130];
+        sprintf(bufer, "<span size=\"30000\">%s</span>", its_tr);
+        gtk_widget_set_name(right_word, "right_word_unhide");
+        gtk_label_set_markup(GTK_LABEL(right_word), bufer);
         gtk_widget_set_name(btn_success, "button_failed");
         gtk_widget_set_name(entry_label, "entry_failed");
     }
@@ -347,7 +358,6 @@ void results_win(GtkWidget* widget, GQueue* list)
     } else {
         pecent_words = (float)success_count_words / all_count_words * 100;
     }
-
     children = gtk_container_get_children(GTK_CONTAINER(tr_box));
     for (iter = children; iter != NULL; iter = g_list_next(iter))
         gtk_widget_destroy(GTK_WIDGET(iter->data));
@@ -384,7 +394,6 @@ void results_win(GtkWidget* widget, GQueue* list)
     gtk_box_pack_start(GTK_BOX(tr_box), btn_to_menu, FALSE, FALSE, 0);
 
     g_free(bufer);
-
     gtk_widget_show_all(tr_box);
     gtk_main();
     gtk_main_quit();
