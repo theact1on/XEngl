@@ -327,6 +327,27 @@ void results_win(GtkWidget* widget, GQueue* list)
     u = localtime(&timer);
     f = settime(u);
 
+    strcpy(stats_item->date, f);
+    stats_item->suc_words = success_count_words;
+    stats_item->all_words = all_count_words;
+
+    FILE* setup_stats = fopen("data/stats.dat", "ab");
+
+    if (setup_stats == NULL) {
+        setup_stats = fopen("data/stats.dat", "wb");
+        fclose(setup_stats);
+        setup_stats = fopen("data/stats.dat", "ab");
+    }
+
+    fwrite(stats_item, sizeof(struct stats_rec), 1, setup_stats);
+    fclose(setup_stats);
+
+    if (success_count_words == 0) {
+        pecent_words = 0;
+    } else {
+        pecent_words = (float)success_count_words / all_count_words * 100;
+    }
+
     gtk_widget_show_all(tr_box);
     gtk_main();
     gtk_main_quit();
