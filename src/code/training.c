@@ -138,6 +138,12 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 
 void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
 {
+    GQueue* list;
+    list = g_queue_new();
+    g_queue_push_head(list, success_count_words);
+    g_queue_push_head(list, btn_end);
+    g_queue_push_head(list, btn_next);
+
     GtkWidget *label_word, *entry_answer_box, *entry_label, *button_success;
     srand(time(NULL));
     label_word = gtk_label_new("LOADING...");
@@ -153,11 +159,15 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     gtk_widget_set_margin_end(button_success, 120);
     gtk_widget_set_margin_start(button_success, 120);
 
+    g_queue_push_head(list, button_success);
+
     entry_label = gtk_entry_new();
     gtk_box_pack_start(GTK_BOX(entry_answer_box), entry_label, FALSE, FALSE, 0);
     gtk_widget_grab_focus(entry_label);
     gtk_widget_set_name(entry_label, "entry_label");
     gtk_widget_set_halign(entry_label, 0.5);
+
+    g_queue_push_head(list, entry_label);
 
     struct Item* its = (struct Item*)malloc(sizeof(struct Item));
 
@@ -172,6 +182,7 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     gtk_label_set_markup(GTK_LABEL(label_word), bufer);
     fclose(question_word);
 
+    g_queue_push_head(list, its);
     // g_signal_connect(G_OBJECT(entry_label), "activate", G_CALLBACK(check_answer_entry), list);
     // g_signal_connect(G_OBJECT(button_success), "clicked", G_CALLBACK(check_answer_entry), list);
 }
