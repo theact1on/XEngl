@@ -317,6 +317,18 @@ void results_win(GtkWidget* widget, GQueue* list)
     gtk_main_quit();
 }
 
+char* settime(struct tm* u)
+{
+    char s[40];
+    char* tmp;
+    for (int i = 0; i < 40; i++)
+        s[i] = 0;
+    int length = strftime(s, 40, "%d.%m.%Y %H:%M:%S", u);
+    tmp = (char*)malloc(sizeof(s));
+    strcpy(tmp, s);
+    return (tmp);
+}
+
 char* strlwr(char* str)
 {
     unsigned char* p = (unsigned char*)str;
