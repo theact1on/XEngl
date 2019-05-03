@@ -295,6 +295,28 @@ void success_answer(GtkWidget* widget, GQueue* list)
     g_queue_free(list);
 }
 
+void results_win(GtkWidget* widget, GQueue* list)
+{
+    GtkWidget *label_name_window, *btn_to_menu, *label_all_words, *label_success_words, *label_pecent;
+    GList *children, *iter;
+    GList* child = g_queue_peek_head_link(list);
+    GtkWidget* tr_box = (GtkWidget*)(child->data);
+    child = child->next;
+    int* breakout = (int*)(child->data);
+    child = child->next;
+    int success_count_words = *((int*)(child->data));
+    child = child->next;
+    int all_count_words = *((int*)(child->data));
+    *breakout = 1;
+    float pecent_words;
+
+    struct stats_rec* stats_item = (struct stats_rec*)malloc(sizeof(struct stats_rec));
+
+    gtk_widget_show_all(tr_box);
+    gtk_main();
+    gtk_main_quit();
+}
+
 char* strlwr(char* str)
 {
     unsigned char* p = (unsigned char*)str;
