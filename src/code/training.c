@@ -138,6 +138,26 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 
 void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
 {
+    GtkWidget *label_word, *entry_answer_box, *entry_label, *button_success;
+    srand(time(NULL));
+    label_word = gtk_label_new("LOADING...");
+    gtk_box_pack_start(task_box, label_word, FALSE, FALSE, 0);
+
+    gtk_widget_set_name(label_word, "label_question");
+
+    entry_answer_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 20);
+    gtk_box_pack_start(task_box, entry_answer_box, FALSE, FALSE, 0);
+    button_success = gtk_button_new_with_label("Подтвердить");
+    gtk_box_pack_end(GTK_BOX(entry_answer_box), button_success, FALSE, FALSE, 0);
+
+    gtk_widget_set_margin_end(button_success, 120);
+    gtk_widget_set_margin_start(button_success, 120);
+
+    entry_label = gtk_entry_new();
+    gtk_box_pack_start(GTK_BOX(entry_answer_box), entry_label, FALSE, FALSE, 0);
+    gtk_widget_grab_focus(entry_label);
+    gtk_widget_set_name(entry_label, "entry_label");
+    gtk_widget_set_halign(entry_label, 0.5);
 }
 
 int count_words()
