@@ -297,6 +297,8 @@ void success_answer(GtkWidget* widget, GQueue* list)
 
 void results_win(GtkWidget* widget, GQueue* list)
 {
+    struct tm* u;
+    char* f;
     GtkWidget *label_name_window, *btn_to_menu, *label_all_words, *label_success_words, *label_pecent;
     GList *children, *iter;
     GList* child = g_queue_peek_head_link(list);
@@ -311,6 +313,10 @@ void results_win(GtkWidget* widget, GQueue* list)
     float pecent_words;
 
     struct stats_rec* stats_item = (struct stats_rec*)malloc(sizeof(struct stats_rec));
+
+    const time_t timer = time(NULL);
+    u = localtime(&timer);
+    f = settime(u);
 
     gtk_widget_show_all(tr_box);
     gtk_main();
