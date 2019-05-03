@@ -183,13 +183,21 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
 
     g_queue_push_head(list, entry_label);
 
-    struct Item* its = (struct Item*)malloc(sizeof(struct Item));
+    struct Item* its = (struct Item*)g_malloc(sizeof(struct Item));
 
     int rand_word = rand() % N_WORDS;
-
+    int type_its = rand() % 2 + 1;
     FILE* question_word = fopen("data/voc.dat", "rb");
     fseek(question_word, rand_word * sizeof(struct Item), 0);
     fread(its, sizeof(struct Item), 1, question_word);
+
+    if (type_its == 2) {
+        char temp[120];
+        strcpy(temp, its->translation);
+        strcpy(its->translation, its->word);
+        strcpy(its->word, temp);
+    }
+
     gtk_label_set_text(GTK_LABEL(label_word), its->translation);
     char bufer[130];
     sprintf(bufer, "<span size=\"35000\">%s</span>", its->translation);
@@ -255,7 +263,8 @@ void check_answer_entry(GtkWidget* widget, GQueue* list)
     child = child->next;
     char* entry = (char*)gtk_entry_get_text(GTK_ENTRY(entry_label));
     char* its_tr = its->word;
-    if (strcmp(strlwr(its_tr), strlwr(entry)) == 0) {
+
+    if (g_utf8_collate(g_utf8_strdown(its_tr, -1), g_utf8_strdown(entry, -1)) == 0) {
         int* success = (int*)(child->data);
         *success = *success + 1;
         gtk_widget_set_name(btn_success, "button_success");
@@ -409,16 +418,4 @@ char* settime(struct tm* u)
     tmp = (char*)malloc(sizeof(s));
     strcpy(tmp, s);
     return (tmp);
-}
-
-char* strlwr(char* str)
-{
-    unsigned char* p = (unsigned char*)str;
-
-    while (*p) {
-        *p = tolower((unsigned char)*p);
-        p++;
-    }
-
-    return str;
 }
