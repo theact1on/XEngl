@@ -31,10 +31,19 @@ void training_win(GtkWidget* widget, gpointer data)
     task_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(tr_box), task_box, TRUE, TRUE, 0);
 
+    GQueue* list;
+    list = g_queue_new();
+    g_queue_push_head(list, &all_count_words);
+    g_queue_push_head(list, &success_count_words);
+    g_queue_push_head(list, &breakout);
+    g_queue_push_head(list, tr_box);
+
+    // g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(results_win), list);
+
     btn_end = gtk_button_new_with_label("Закончить");
     gtk_widget_set_margin_bottom(btn_end, 10);
     gtk_box_pack_start(GTK_BOX(button_box), btn_end, TRUE, TRUE, 15);
-    g_signal_connect(G_OBJECT(btn_end), "clicked", gtk_main_quit, NULL);
+    g_signal_connect(G_OBJECT(btn_end), "clicked", G_CALLBACK(results_win), list);
     gtk_widget_set_sensitive(btn_end, FALSE);
 
     btn_next = gtk_button_new_with_label("Далее ->");
