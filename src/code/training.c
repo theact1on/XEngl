@@ -391,7 +391,7 @@ void results_win(GtkWidget* widget, GQueue* list)
     gtk_label_set_justify(GTK_LABEL(label_success_words), GTK_JUSTIFY_CENTER);
     gtk_box_pack_start(GTK_BOX(tr_box), label_success_words, TRUE, TRUE, 30);
 
-    sprintf(bufer, "<span size=\"15000\">Процент правильных ответов</span>\n<span size=\"35000\">%.1f\%</span>", pecent_words);
+    sprintf(bufer, "<span size=\"15000\">Процент правильных ответов</span>\n<span size=\"35000\">%.1f%%</span>", pecent_words);
     label_pecent = gtk_label_new(NULL);
     gtk_label_set_xalign(GTK_LABEL(label_pecent), 0.5);
     gtk_label_set_markup(GTK_LABEL(label_pecent), bufer);
