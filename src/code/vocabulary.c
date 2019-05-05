@@ -34,11 +34,9 @@ void write_to_bfile(GtkWidget* button, gpointer data)
     GtkTreeIter iter;
     gtk_tree_model_get_iter_first(model, &iter);
 
-    while (gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0)) != 1) {
-        gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
-    }
+    gtk_tree_view_column_set_sort_column_id(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0), 0);
     gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
-    // g_print("%d \n", gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0)));
+    g_print("%d \n", gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0)));
 
     gboolean valid;
     valid = gtk_tree_model_get_iter_first(model, &iter);
@@ -50,7 +48,6 @@ void write_to_bfile(GtkWidget* button, gpointer data)
         gtk_tree_model_get(model, &iter, 0, &(word), 1, &(translation), -1);
         strcpy(item.word, word);
         strcpy(item.translation, translation);
-        // g_print("%s\t%s\n", word, translation);
         fwrite(&item, sizeof(item), 1, file); // запись в файл структуры
         valid = gtk_tree_model_iter_next(model, &iter);
     }
@@ -120,7 +117,7 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
     gtk_tree_path_free(path);
 
     gint column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(cell), "column"));
-    // g_print("%d     %p     %s      %p\n", column, cell, path_string, data);
+
     switch (column) {
     case 0: {
         strcpy(item->word, new_text);
@@ -196,12 +193,11 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
         g_signal_connect(renderer, "edited", G_CALLBACK(cell_edited), GTK_TREE_MODEL(model));
         g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(i));
         column = gtk_tree_view_column_new_with_attributes(names_columns[i], renderer, "text", i, NULL);
-        gtk_tree_view_column_set_sort_column_id(column, i);
+       
         gtk_tree_view_column_set_alignment(column, 0.5); // Выравнивание по центру
         gtk_tree_view_column_set_expand(column, TRUE);   // Равное разбиение между столбцами
         gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
     }
-    gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
 
     /* Нажатия на кнопки */
     g_signal_connect(G_OBJECT(btn_add_rec), "clicked", G_CALLBACK(add_item), treeview);
