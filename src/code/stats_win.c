@@ -36,7 +36,7 @@ void stats_win(GtkWidget* widget, gpointer data)
     gtk_container_set_border_width(GTK_CONTAINER(scrolled_win), 15);
     gtk_box_pack_start(GTK_BOX(stats_box), scrolled_win, TRUE, TRUE, 0);
 
-    store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
+    store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_FLOAT);
     gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(store));
     gtk_container_add(GTK_CONTAINER(scrolled_win), treeview);
 
@@ -65,7 +65,7 @@ void stats_win(GtkWidget* widget, gpointer data)
     }
     while (stats != NULL && !feof(stats)) {
         gtk_list_store_prepend(store, &iter);
-        gtk_list_store_set(store, &iter, 0, user_stats->date, 1, user_stats->suc_words, 2, user_stats->all_words, 3, user_stats->suc_words / user_stats->all_words * 100, -1);
+        gtk_list_store_set(store, &iter, 0, user_stats->date, 1, user_stats->suc_words, 2, user_stats->all_words, 3, (float)user_stats->suc_words / user_stats->all_words * 100, -1);
         gtk_main_iteration_do(gtk_events_pending());
         fread(user_stats, sizeof(struct stats_rec), 1, stats);
     }
