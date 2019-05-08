@@ -24,21 +24,60 @@ void read_from_bfile(GtkListStore* model)
     file = NULL;
 }
 
+gint sort(GtkTreeModel* model, GtkTreeIter* a, GtkTreeIter* b, gpointer user_data)
+{
+    gchar *first, *second;
+    gtk_tree_model_get(model, a, 0, &first, -1);
+    gtk_tree_model_get(model, b, 0, &second, -1);
+    gint return_value = g_utf8_collate(first, second);
+    g_free(first);
+    g_free(second);
+    return return_value;
+}
+
+gint sortsave(GtkTreeModel* model, GtkTreeIter* a, GtkTreeIter* b, gpointer user_data)
+{
+    gtk_main_iteration_do(gtk_events_pending());
+    gchar *first, *second;
+    gtk_tree_model_get(model, a, 0, &first, -1);
+    gtk_tree_model_get(model, b, 0, &second, -1);
+    gint return_value = g_utf8_collate(first, second);
+    g_free(first);
+    g_free(second);
+    return return_value;
+}
 void write_to_bfile(GtkWidget* button, gpointer data)
 {
+    GtkWidget* window = gtk_widget_get_toplevel(button);
+
+    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    gtk_container_remove(GTK_CONTAINER(window), main_box);
+
+    GtkWidget* spin_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_container_add(GTK_CONTAINER(window), spin_box);
+
+    /* Спиннер */
+    GtkWidget* spinner = gtk_spinner_new();
+    gtk_box_pack_end(GTK_BOX(spin_box), spinner, TRUE, TRUE, 30);
+    gtk_widget_show_all(spin_box);
+    gtk_spinner_start(GTK_SPINNER(spinner));
+    gtk_main_iteration_do(gtk_events_pending());
     struct Item item;
 
     GtkTreeView* treeview = (GtkTreeView*)data;
+
     GtkTreeModel* model = gtk_tree_view_get_model(treeview);
 
     GtkTreeIter iter;
     gtk_tree_model_get_iter_first(model, &iter);
 
+    /* Сортировка по алфавиту */
+    GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
+    gtk_tree_sortable_set_sort_func(sortable, 0, sortsave, GINT_TO_POINTER(0), NULL);
     while (gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0)) != 1) {
         gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
     }
     gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
-    // g_print("%d \n", gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0)));
 
     gboolean valid;
     valid = gtk_tree_model_get_iter_first(model, &iter);
@@ -47,17 +86,23 @@ void write_to_bfile(GtkWidget* button, gpointer data)
     gchar* translation;
     file = fopen("data/temp.dat", "wb"); // открытие бинарного файла для записи
     while (valid) {
+        gtk_main_iteration_do(gtk_events_pending());
         gtk_tree_model_get(model, &iter, 0, &(word), 1, &(translation), -1);
         strcpy(item.word, word);
         strcpy(item.translation, translation);
-        // g_print("%s\t%s\n", word, translation);
         fwrite(&item, sizeof(item), 1, file); // запись в файл структуры
         valid = gtk_tree_model_iter_next(model, &iter);
     }
     fclose(file);
     remove("data/voc.dat");
     rename("data/temp.dat", "data/voc.dat");
+
+    gtk_widget_destroy(spinner);
+    gtk_widget_show_all(spin_box);
     gtk_main_quit();
+    gtk_widget_destroy(spin_box);
+    gtk_container_add(GTK_CONTAINER(window), main_box);
+    gtk_widget_show_all(window);
 }
 
 void add_item(GtkWidget* button, gpointer data)
@@ -69,6 +114,10 @@ void add_item(GtkWidget* button, gpointer data)
 
     GtkTreeModel* model = gtk_tree_view_get_model(treeview);
     GtkTreeViewColumn* column;
+
+    /* Отмена сортировки */
+    GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
+    gtk_tree_sortable_set_sort_column_id(sortable, -2, 1);
 
     /* Вставка новой строки после текущей */
     GtkTreePath* path;
@@ -120,7 +169,7 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
     gtk_tree_path_free(path);
 
     gint column = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(cell), "column"));
-    // g_print("%d     %p     %s      %p\n", column, cell, path_string, data);
+
     switch (column) {
     case 0: {
         strcpy(item->word, new_text);
@@ -156,13 +205,13 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_box_pack_start(GTK_BOX(btns_box), btns_box1, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(btns_box), btns_box2, FALSE, FALSE, 0);
 
-    btn_add_rec = gtk_button_new_with_label("Добавить запись");
-    gtk_widget_set_margin_bottom(btn_add_rec, 10);
-    gtk_box_pack_start(GTK_BOX(btns_box1), btn_add_rec, TRUE, TRUE, 15);
-
     btn_rem_rec = gtk_button_new_with_label("Удалить запись");
     gtk_widget_set_margin_bottom(btn_rem_rec, 10);
     gtk_box_pack_start(GTK_BOX(btns_box1), btn_rem_rec, TRUE, TRUE, 15);
+
+    btn_add_rec = gtk_button_new_with_label("Добавить запись");
+    gtk_widget_set_margin_bottom(btn_add_rec, 10);
+    gtk_box_pack_start(GTK_BOX(btns_box1), btn_add_rec, TRUE, TRUE, 15);
 
     btn_back = gtk_button_new_with_label("Назад");
     gtk_widget_set_margin_bottom(btn_back, 10);
@@ -201,11 +250,14 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
         gtk_tree_view_column_set_expand(column, TRUE);   // Равное разбиение между столбцами
         gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
     }
-    gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
+
+    /* задание сортировки */
+    GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
+    gtk_tree_sortable_set_sort_func(sortable, 0, sort, GINT_TO_POINTER(0), NULL);
 
     /* Нажатия на кнопки */
-    g_signal_connect(G_OBJECT(btn_add_rec), "clicked", G_CALLBACK(add_item), treeview);
     g_signal_connect(G_OBJECT(btn_rem_rec), "clicked", G_CALLBACK(remove_item), treeview);
+    g_signal_connect(G_OBJECT(btn_add_rec), "clicked", G_CALLBACK(add_item), treeview);
     g_signal_connect(G_OBJECT(btn_back), "clicked", gtk_main_quit, NULL);
     g_signal_connect(G_OBJECT(btn_save), "clicked", G_CALLBACK(write_to_bfile), treeview);
 
