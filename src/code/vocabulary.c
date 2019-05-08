@@ -35,6 +35,17 @@ gint sort(GtkTreeModel* model, GtkTreeIter* a, GtkTreeIter* b, gpointer user_dat
     return return_value;
 }
 
+gint sortsave(GtkTreeModel* model, GtkTreeIter* a, GtkTreeIter* b, gpointer user_data)
+{
+    gtk_main_iteration_do(gtk_events_pending());
+    gchar *first, *second;
+    gtk_tree_model_get(model, a, 0, &first, -1);
+    gtk_tree_model_get(model, b, 0, &second, -1);
+    gint return_value = g_utf8_collate(first, second);
+    g_free(first);
+    g_free(second);
+    return return_value;
+}
 void write_to_bfile(GtkWidget* button, gpointer data)
 {
     GtkWidget* window = gtk_widget_get_toplevel(button);
@@ -62,7 +73,7 @@ void write_to_bfile(GtkWidget* button, gpointer data)
 
     /* Сортировка по алфавиту */
     GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
-    gtk_tree_sortable_set_sort_func(sortable, 0, sort, GINT_TO_POINTER(0), NULL);
+    gtk_tree_sortable_set_sort_func(sortable, 0, sortsave, GINT_TO_POINTER(0), NULL);
     while (gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0)) != 1) {
         gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
     }
