@@ -24,17 +24,6 @@ void read_from_bfile(GtkListStore* model)
     file = NULL;
 }
 
-gint sort(GtkTreeModel* model, GtkTreeIter* a, GtkTreeIter* b, gpointer user_data)
-{
-    gchar *first, *second;
-    gtk_tree_model_get(model, a, 0, &first, -1);
-    gtk_tree_model_get(model, b, 0, &second, -1);
-    gint return_value = g_utf8_collate(first, second);
-    g_free(first);
-    g_free(second);
-    return return_value;
-}
-
 gint sortsave(GtkTreeModel* model, GtkTreeIter* a, GtkTreeIter* b, gpointer user_data)
 {
     gtk_main_iteration_do(gtk_events_pending());
@@ -74,9 +63,6 @@ void write_to_bfile(GtkWidget* button, gpointer data)
     /* Сортировка по алфавиту */
     GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
     gtk_tree_sortable_set_sort_func(sortable, 0, sortsave, GINT_TO_POINTER(0), NULL);
-    while (gtk_tree_view_column_get_sort_order(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0)) != 1) {
-        gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
-    }
     gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
 
     gboolean valid;
@@ -131,8 +117,8 @@ void add_item(GtkWidget* button, gpointer data)
     }
 
     /* Установка данных для новой строки*/
-    strcpy(item->word, "<Слово>");
-    strcpy(item->translation, "<Перевод>");
+    strcpy(item->word, "'Слово'");
+    strcpy(item->translation, "'Перевод'");
 
     gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, item->word, 1, item->translation, -1);
 
@@ -194,37 +180,30 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     GtkWidget *label, *btns_box, *btn_add_rec, *btn_rem_rec, *btn_back, *btn_save, *treeview, *sw;
 
     label = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label), "<span size=\"25000\" color=\"#c9281e\">Словарь</span>");
     gtk_box_pack_start(GTK_BOX(voc_box), label, FALSE, FALSE, 30);
+    gtk_label_set_markup(GTK_LABEL(label), "Словарь");
 
-    btns_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    btns_box = gtk_grid_new();
     gtk_box_pack_end(GTK_BOX(voc_box), btns_box, FALSE, FALSE, 0);
-    GtkWidget *btns_box1, *btns_box2;
-    btns_box1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    btns_box2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_box_pack_start(GTK_BOX(btns_box), btns_box1, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(btns_box), btns_box2, FALSE, FALSE, 0);
+    gtk_grid_set_row_homogeneous((GtkGrid*)btns_box, TRUE);
+    gtk_grid_set_column_homogeneous((GtkGrid*)btns_box, TRUE);
+    gtk_grid_set_row_spacing((GtkGrid*)btns_box, 10);
+    gtk_grid_set_column_spacing((GtkGrid*)btns_box, 10);
 
     btn_rem_rec = gtk_button_new_with_label("Удалить запись");
-    gtk_widget_set_margin_bottom(btn_rem_rec, 10);
-    gtk_box_pack_start(GTK_BOX(btns_box1), btn_rem_rec, TRUE, TRUE, 15);
-
     btn_add_rec = gtk_button_new_with_label("Добавить запись");
-    gtk_widget_set_margin_bottom(btn_add_rec, 10);
-    gtk_box_pack_start(GTK_BOX(btns_box1), btn_add_rec, TRUE, TRUE, 15);
-
     btn_back = gtk_button_new_with_label("Назад");
-    gtk_widget_set_margin_bottom(btn_back, 10);
-    gtk_box_pack_start(GTK_BOX(btns_box2), btn_back, TRUE, TRUE, 15);
-
     btn_save = gtk_button_new_with_label("Сохранить");
-    gtk_widget_set_margin_bottom(btn_save, 10);
-    gtk_box_pack_start(GTK_BOX(btns_box2), btn_save, TRUE, TRUE, 15);
+
+    gtk_grid_attach((GtkGrid*)btns_box, btn_rem_rec, 0, 0, 1, 1);
+    gtk_grid_attach((GtkGrid*)btns_box, btn_add_rec, 1, 0, 1, 1);
+    gtk_grid_attach((GtkGrid*)btns_box, btn_back, 0, 1, 1, 1);
+    gtk_grid_attach((GtkGrid*)btns_box, btn_save, 1, 1, 1, 1);
 
     sw = gtk_scrolled_window_new(NULL, NULL);
+    gtk_box_pack_start(GTK_BOX(voc_box), sw, TRUE, TRUE, 0);
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw), GTK_SHADOW_ETCHED_IN);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_box_pack_start(GTK_BOX(voc_box), sw, TRUE, TRUE, 0);
 
     treeview = gtk_tree_view_new();
     /* Задание модели таблицы */
@@ -250,10 +229,6 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
         gtk_tree_view_column_set_expand(column, TRUE);   // Равное разбиение между столбцами
         gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
     }
-
-    /* задание сортировки */
-    GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
-    gtk_tree_sortable_set_sort_func(sortable, 0, sort, GINT_TO_POINTER(0), NULL);
 
     /* Нажатия на кнопки */
     g_signal_connect(G_OBJECT(btn_rem_rec), "clicked", G_CALLBACK(remove_item), treeview);
