@@ -149,6 +149,10 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
 
     GtkTreeModel* model = (GtkTreeModel*)data;
 
+    /* Отмена сортировки */
+    GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
+    gtk_tree_sortable_set_sort_column_id(sortable, -2, 1);
+
     GtkTreePath* path = gtk_tree_path_new_from_string(path_string);
     GtkTreeIter iter;
     gtk_tree_model_get_iter(model, &iter, path);
