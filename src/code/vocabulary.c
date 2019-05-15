@@ -225,6 +225,7 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
         g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(i));
         column = gtk_tree_view_column_new_with_attributes(names_columns[i], renderer, "text", i, NULL);
         gtk_tree_view_column_set_sort_column_id(column, i);
+        gtk_tree_view_column_set_fixed_width(column, 1);
         gtk_tree_view_column_set_alignment(column, 0.5); // Выравнивание по центру
         gtk_tree_view_column_set_expand(column, TRUE);   // Равное разбиение между столбцами
         gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
