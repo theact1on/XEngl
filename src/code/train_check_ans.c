@@ -85,8 +85,23 @@ void enter_compare(GtkWidget* widget, GQueue* list)
 
 int compare_words(const char* answer, struct Item* right_word, int what_is)
 {
+    if (what_is == 1) {
+        if (g_utf8_collate(g_utf8_strdown(answer, -1), g_utf8_strdown(right_word->translation, -1)) == 0) {
+            return 1;
+        }
+    } else {
+        if (g_utf8_collate(g_utf8_strdown(answer, -1), g_utf8_strdown(right_word->word, -1)) == 0) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 int compare_structs(struct Item* first_word, struct Item* second_word)
 {
+    if (g_utf8_collate(g_utf8_strdown(first_word->word, -1), g_utf8_strdown(second_word->word, -1)) == 0
+        || g_utf8_collate(g_utf8_strdown(first_word->translation, -1), g_utf8_strdown(second_word->translation, -1)) == 0) {
+        return 1;
+    }
+    return 0;
 }
