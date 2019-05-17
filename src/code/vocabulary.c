@@ -51,21 +51,21 @@ void write_to_bfile(GtkWidget* button, gpointer data)
     gtk_widget_show_all(spin_box);
     gtk_spinner_start(GTK_SPINNER(spinner));
     gtk_main_iteration_do(gtk_events_pending());
-    struct Item item;
 
     GtkTreeView* treeview = (GtkTreeView*)data;
-
     GtkTreeModel* model = gtk_tree_view_get_model(treeview);
 
-    GtkTreeIter iter;
-    gtk_tree_model_get_iter_first(model, &iter);
+    GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
+    /* Отмена сортировки */
+    gtk_tree_sortable_set_sort_column_id(sortable, -2, 1);
 
     /* Сортировка по алфавиту */
-    GtkTreeSortable* sortable = GTK_TREE_SORTABLE(model);
     gtk_tree_sortable_set_sort_func(sortable, 0, sortsave, GINT_TO_POINTER(0), NULL);
     gtk_tree_view_column_clicked(gtk_tree_view_get_column(GTK_TREE_VIEW(treeview), 0));
 
+    GtkTreeIter iter;
     gboolean valid;
+    struct Item item;
     valid = gtk_tree_model_get_iter_first(model, &iter);
     FILE* file;
     gchar* word;
