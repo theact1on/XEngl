@@ -73,6 +73,7 @@ void write_to_bfile(GtkWidget* button, gpointer data)
     gchar* word;
     gchar* translation;
     file = fopen("data/temp.dat", "wb"); // открытие бинарного файла для записи
+    file = def_words(file);
     while (valid) {
         gtk_main_iteration_do(gtk_events_pending());
         gtk_tree_model_get(model, &iter, 0, &(word), 1, &(translation), -1);
