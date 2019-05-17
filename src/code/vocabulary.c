@@ -147,18 +147,23 @@ void insert_text(GtkEntry* entry, const gchar* text, gint len, gint* position, g
     GtkEditable* editable = GTK_EDITABLE(entry);
     int i, count = 0;
     gchar* result = g_new(gchar, len);
-
     gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`№;:?.<>,[]{}()-=/\"\\|";
     int flag;
 
     for (i = 0; i < len; i++) {
         flag = 0;
-        for (int j = 0; j < strlen(ignored_characters); j++) {
-            if (text[i] == ignored_characters[j]) {
+        if (*position == 0) {
+            if (text[i] == ' ') {
                 flag = 1;
                 break;
             }
-        }
+        } else
+            for (int j = 0; j < strlen(ignored_characters); j++) {
+                if (text[i] == ignored_characters[j]) {
+                    flag = 1;
+                    break;
+                }
+            }
 
         if (flag)
             continue;
@@ -197,12 +202,18 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
 
     switch (column) {
     case 0: {
-        strcpy(item->word, new_text);
+        if (new_text[0] == '\0')
+            strcpy(item->word, "'Слово'");
+        else
+            strcpy(item->word, new_text);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, column, item->word, -1);
     } break;
 
     case 1: {
-        strcpy(item->translation, new_text);
+        if (new_text[0] == '\0')
+            strcpy(item->translation, "'Перевод'");
+        else
+            strcpy(item->translation, new_text);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, column, item->translation, -1);
     } break;
     }
