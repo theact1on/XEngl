@@ -74,9 +74,11 @@ void write_to_bfile(GtkWidget* button, gpointer data)
     while (valid) {
         gtk_main_iteration_do(gtk_events_pending());
         gtk_tree_model_get(model, &iter, 0, &(word), 1, &(translation), -1);
-        strcpy(item.word, word);
-        strcpy(item.translation, translation);
-        fwrite(&item, sizeof(item), 1, file); // запись в файл структуры
+        if (!((g_utf8_collate(word, "'Слово'") == 0) || (g_utf8_collate(translation, "'Перевод'") == 0))) {
+            strcpy(item.word, word);
+            strcpy(item.translation, translation);
+            fwrite(&item, sizeof(item), 1, file); // запись в файл структуры
+        }
         valid = gtk_tree_model_iter_next(model, &iter);
     }
     fclose(file);
@@ -180,7 +182,9 @@ void insert_text(GtkEntry* entry, const gchar* text, gint len, gint* position, g
 
 void cell_edit(GtkCellRenderer* renderer, GtkCellEditable* editable, gchar* path, gpointer user_data)
 {
-    gtk_entry_set_max_length((GtkEntry*)editable, 100); // ограничение ввода в 100 символов
+    if (g_utf8_collate(gtk_entry_get_text((GtkEntry*)editable), "'Слово'") == 0 || g_utf8_collate(gtk_entry_get_text((GtkEntry*)editable), "'Перевод'") == 0)
+        gtk_entry_set_text((GtkEntry*)editable, "");
+    gtk_entry_set_max_length((GtkEntry*)editable, 99); // ограничение ввода
     g_signal_connect(G_OBJECT(editable), "insert_text", G_CALLBACK(insert_text), NULL);
 }
 void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gchar* new_text, gpointer data)
