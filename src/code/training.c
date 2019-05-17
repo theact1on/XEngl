@@ -86,7 +86,7 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 
     srand(time(NULL));
     GtkWidget *label_word, *btn_answer_box, *answer_buttons[4];
-    struct Item its;
+    struct Item* its = (struct Item*)malloc(sizeof(struct Item));
     struct Item fail;
 
     label_word = gtk_label_new("LOADING...");
@@ -100,36 +100,45 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
     const int NUM_BUTTONS = 7;
 
     int rand_word[7] = {-1};
-    int type_its = rand() % 2 + 1;
+    struct Item rand_word_item[7] = {-1};
+    int* type_its = (int*)malloc(sizeof(int));
+    *type_its = rand() % 2 + 1;
+
+    g_queue_push_head(list, type_its);
 
     char bufer[130];
-    rand_word[3] = rand() % N_WORDS;
+    rand_word[3] = rand() % N_WORDS + NUM_DEF_WORDS;
     FILE* question_word = fopen("data/voc.dat", "rb");
     fseek(question_word, rand_word[3] * sizeof(struct Item), 0);
-    fread(&its, sizeof(struct Item), 1, question_word);
+    fread(its, sizeof(struct Item), 1, question_word);
+    rand_word_item[3] = *its;
 
-    if (type_its == 1) {
-        gtk_label_set_text(GTK_LABEL(label_word), its.word);
-        sprintf(bufer, "<span size=\"35000\">%s</span>", its.word);
+    g_queue_push_head(list, its);
+
+    if (*type_its == 1) {
+        gtk_label_set_text(GTK_LABEL(label_word), its->word);
+        sprintf(bufer, "<span size=\"35000\">%s</span>", its->word);
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
-        answer_buttons[3] = gtk_button_new_with_label(its.translation);
+        answer_buttons[3] = gtk_button_new_with_label(its->translation);
     } else {
-        gtk_label_set_text(GTK_LABEL(label_word), its.translation);
-        sprintf(bufer, "<span size=\"35000\">%s</span>", its.translation);
+        gtk_label_set_text(GTK_LABEL(label_word), its->translation);
+        sprintf(bufer, "<span size=\"35000\">%s</span>", its->translation);
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
-        answer_buttons[3] = gtk_button_new_with_label(its.word);
+        answer_buttons[3] = gtk_button_new_with_label(its->word);
     }
 
     g_queue_push_head(list, answer_buttons[3]);
 
     for (int i = 4; i < 7; i++) {
         do {
-            rand_word[i] = rand() % N_WORDS;
-        } while (rand_word[i] == rand_word[i - 1] || rand_word[i] == rand_word[i - 2] || rand_word[i] == rand_word[i - 3]);
-        fseek(question_word, rand_word[i] * sizeof(struct Item), 0);
-        fread(&fail, sizeof(struct Item), 1, question_word);
+            rand_word[i] = rand() % (N_WORDS + NUM_DEF_WORDS);
+            fseek(question_word, rand_word[i] * sizeof(struct Item), 0);
+            fread(&fail, sizeof(struct Item), 1, question_word);
+            rand_word_item[i] = fail;
+        } while (compare_structs(&rand_word_item[i], &rand_word_item[i - 1]) || compare_structs(&rand_word_item[i], &rand_word_item[i - 2])
+                 || compare_structs(&rand_word_item[i], &rand_word_item[i - 3]));
 
-        if (type_its == 1) {
+        if (*type_its == 1) {
             answer_buttons[i - 4] = gtk_button_new_with_label(fail.translation);
         } else {
             answer_buttons[i - 4] = gtk_button_new_with_label(fail.word);
@@ -137,9 +146,9 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
 
         g_queue_push_head(list, answer_buttons[i - 4]);
 
-        g_signal_connect(G_OBJECT(answer_buttons[i - 4]), "clicked", G_CALLBACK(failed_answer), list);
+        g_signal_connect(G_OBJECT(answer_buttons[i - 4]), "clicked", G_CALLBACK(button_compare), list);
     }
-    g_signal_connect(G_OBJECT(answer_buttons[3]), "clicked", G_CALLBACK(success_answer), list);
+    g_signal_connect(G_OBJECT(answer_buttons[3]), "clicked", G_CALLBACK(button_compare), list);
     shuffle_widgets(answer_buttons, 4);
 
     for (int i = 0; i < 4; i++)
