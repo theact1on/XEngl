@@ -27,8 +27,8 @@ int main(int argc, char* argv[])
     g_signal_connect(G_OBJECT(main_buttons[2]), "clicked", G_CALLBACK(stats_win), window);
     g_signal_connect_swapped(G_OBJECT(main_buttons[3]), "clicked", G_CALLBACK(exit), (gpointer)0);
 
-    gtk_box_pack_start(GTK_BOX(main_box), main_logo, FALSE, FALSE, 0);
     gtk_box_pack_end(GTK_BOX(main_box), button_box, TRUE, TRUE, 0);
+    gtk_box_pack_end(GTK_BOX(main_box), main_logo, FALSE, FALSE, 25);
     gtk_box_pack_start(GTK_BOX(button_box), main_buttons[0], TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(button_box), main_buttons[1], TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(button_box), main_buttons[2], TRUE, TRUE, 0);

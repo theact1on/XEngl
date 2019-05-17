@@ -8,6 +8,6 @@ FILE* def_words(FILE* file_voc)
                                                 {"wool", "шерсть"},     {"wind", "ветер"},          {"weather", "погода"},         {"trade", "торговля"},   {"tax", "налог"},
                                                 {"talk", "говорить"},   {"stone", "камень"},        {"statement", "утверждение"},  {"smoke", "дым"},        {"sleep", "спать"}};
 
-    fwrite(default_words,sizeof(struct Item)*NUM_DEF_WORDS,1,file_voc);
+    fwrite(default_words, sizeof(struct Item) * NUM_DEF_WORDS, 1, file_voc);
     return file_voc;
 }
