@@ -12,11 +12,25 @@ void training_win(GtkWidget* widget, gpointer data)
     int all_count_words = 0;
     int success_count_words = 0;
     int breakout = 0;
-
     task_function types_of_task[2] = {four_buttons_task, enter_translate_task};
     GtkWidget* window = (GtkWidget*)data;
     GtkWidget *tr_box, *label_name_window, *task_box, *button_box, *btn_next, *btn_end;
     GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    GtkWidget* info_bar = gtk_info_bar_new();
+
+    if (num_of_words == 0) {
+        breakout = 1;
+        if (!GTK_IS_INFO_BAR(gtk_container_get_children(GTK_CONTAINER(main_box))->data)) {
+            GtkWidget* label_error = gtk_label_new("Словарь пуст");
+            GtkWidget* content_area = gtk_info_bar_get_content_area(GTK_INFO_BAR(info_bar));
+            gtk_info_bar_set_message_type(GTK_INFO_BAR(info_bar), GTK_MESSAGE_ERROR);
+            gtk_box_pack_start(GTK_BOX(main_box), info_bar, FALSE, FALSE, 0);
+            gtk_info_bar_set_show_close_button(GTK_INFO_BAR(info_bar), TRUE);
+            gtk_widget_show(info_bar);
+            g_signal_connect(info_bar, "response", G_CALLBACK(gtk_widget_destroy), NULL);
+            gtk_container_add(GTK_CONTAINER(content_area), label_error);
+        }
+    }
 
     gtk_container_remove(GTK_CONTAINER(window), main_box);
     tr_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
