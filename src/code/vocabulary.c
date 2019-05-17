@@ -251,6 +251,7 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 
     treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(model));
+    gtk_tree_view_set_enable_search((GtkTreeView*)treeview, FALSE);
     gtk_container_add(GTK_CONTAINER(sw), treeview);
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview)), GTK_SELECTION_SINGLE);
 
