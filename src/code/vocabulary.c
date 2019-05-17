@@ -157,18 +157,18 @@ void insert_text(GtkEntry* entry, const gchar* text, gint len, gint* position, g
 
     for (i = 0; i < len; i++) {
         flag = 0;
-        if (*position == 0) {
-            if (text[i] == ' ') {
-                flag = 1;
-                break;
-            }
-        } else
-            for (int j = 0; j < strlen(ignored_characters); j++) {
-                if (text[i] == ignored_characters[j]) {
+
+        for (int j = 0; j < strlen(ignored_characters); j++) {
+            if (*position == 0)
+                if (text[i] == ' ') {
                     flag = 1;
                     break;
                 }
+            if (text[i] == ignored_characters[j]) {
+                flag = 1;
+                break;
             }
+        }
 
         if (flag)
             continue;
