@@ -142,11 +142,46 @@ void remove_item(GtkWidget* widget, gpointer data)
         gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 }
 
+void insert_text(GtkEntry* entry, const gchar* text, gint len, gint* position, gpointer data)
+{
+    GtkEditable* editable = GTK_EDITABLE(entry);
+    int i, count = 0;
+    gchar* result = g_new(gchar, len);
+
+    gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`№;:?.<>,[]{}()-=/\"\\|";
+    int flag;
+
+    for (i = 0; i < len; i++) {
+        flag = 0;
+        for (int j = 0; j < strlen(ignored_characters); j++) {
+            if (text[i] == ignored_characters[j]) {
+                flag = 1;
+                break;
+            }
+        }
+
+        if (flag)
+            continue;
+        result[count] = text[i];
+        count++;
+    }
+
+    g_signal_handlers_block_by_func(G_OBJECT(editable), G_CALLBACK(insert_text), data);
+    gtk_editable_insert_text(editable, result, count, position);
+    g_signal_handlers_unblock_by_func(G_OBJECT(editable), G_CALLBACK(insert_text), data);
+    g_signal_stop_emission_by_name(G_OBJECT(editable), "insert_text");
+    g_free(result);
+}
+
+void cell_edit(GtkCellRenderer* renderer, GtkCellEditable* editable, gchar* path, gpointer user_data)
+{
+    gtk_entry_set_max_length((GtkEntry*)editable, 100); // ограничение ввода в 100 символов
+    g_signal_connect(G_OBJECT(editable), "insert_text", G_CALLBACK(insert_text), NULL);
+}
 void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gchar* new_text, gpointer data)
 {
     struct Item* item;
     item = (struct Item*)malloc(sizeof(struct Item));
-
     GtkTreeModel* model = (GtkTreeModel*)data;
 
     /* Отмена сортировки */
@@ -172,6 +207,7 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
     } break;
     }
 }
+
 void vocabulary_win(GtkWidget* widget, gpointer data)
 {
     GtkWidget* window = (GtkWidget*)data;
@@ -226,6 +262,7 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
         renderer = gtk_cell_renderer_text_new();
         g_object_set(renderer, "editable", TRUE, NULL); // Редактирование строки
         g_signal_connect(renderer, "edited", G_CALLBACK(cell_edited), GTK_TREE_MODEL(model));
+        g_signal_connect(renderer, "editing-started", G_CALLBACK(cell_edit), GTK_TREE_MODEL(model));
         g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(i));
         column = gtk_tree_view_column_new_with_attributes(names_columns[i], renderer, "text", i, NULL);
         gtk_tree_view_column_set_sort_column_id(column, i);
