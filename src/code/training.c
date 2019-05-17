@@ -1,5 +1,7 @@
 #include "training.h"
+#include "default_words.h"
 #include "stats_win.h"
+#include "train_check_ans.h"
 #include "vocabulary.h"
 
 void training_win(GtkWidget* widget, gpointer data)
@@ -211,18 +213,20 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
 
 int count_words()
 {
-    FILE* file_count = fopen("data/voc.dat", "rb");
-    struct Item* temp = g_malloc(sizeof(struct Item));
+    long i;
     int counter = 0;
-    fread(temp, sizeof(struct Item), 1, file_count);
-    while (!feof(file_count)) {
-        counter++;
-        fread(temp, sizeof(struct Item), 1, file_count);
+    FILE* file_count = fopen("data/voc.dat", "rb");
+    if (file_count == NULL) {
+        file_count = fopen("data/voc.dat", "wb");
+        file_count = def_words(file_count);
+        fclose(file_count);
+        file_count = fopen("data/voc.dat", "rb");
     }
-    gtk_main_iteration_do(gtk_events_pending());
-    g_free(temp);
+    fseek(file_count, 0, 2);
+    i = ftell(file_count);
+    counter = i / sizeof(struct Item);
     fclose(file_count);
-    return counter;
+    return counter - NUM_DEF_WORDS;
 }
 
 void shuffle_widgets(GtkWidget** arr, int N)
