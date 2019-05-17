@@ -1,4 +1,5 @@
 #include "vocabulary.h"
+#include "default_words.h"
 
 void read_from_bfile(GtkListStore* model)
 {
@@ -7,12 +8,13 @@ void read_from_bfile(GtkListStore* model)
     item = (struct Item*)malloc(sizeof(struct Item));
     GtkTreeIter iter;
     FILE* file = fopen("data/voc.dat", "rb");
-
     if (file == NULL) {
         file = fopen("data/voc.dat", "wb");
+        file = def_words(file);
         fclose(file);
         file = fopen("data/voc.dat", "rb");
     }
+    fseek(file, sizeof(struct Item) * NUM_DEF_WORDS, 0);
     fread(item, sizeof(struct Item), 1, file);
     while (file != NULL && !feof(file)) {
         gtk_list_store_append(model, &iter);
