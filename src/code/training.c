@@ -197,27 +197,30 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     struct Item* its = (struct Item*)g_malloc(sizeof(struct Item));
 
     int rand_word = rand() % N_WORDS;
-    int type_its = rand() % 2 + 1;
+    int* type_its = (int*)malloc(sizeof(int));
+    *type_its = rand() % 2 + 1;
     FILE* question_word = fopen("data/voc.dat", "rb");
-    fseek(question_word, rand_word * sizeof(struct Item), 0);
+    fseek(question_word, rand_word * sizeof(struct Item) + NUM_DEF_WORDS * sizeof(struct Item), 0);
     fread(its, sizeof(struct Item), 1, question_word);
 
-    if (type_its == 2) {
-        char temp[120];
-        strcpy(temp, its->translation);
-        strcpy(its->translation, its->word);
-        strcpy(its->word, temp);
+    if (*type_its == 1) {
+        gtk_label_set_text(GTK_LABEL(label_word), its->word);
+        char bufer[130];
+        sprintf(bufer, "<span size=\"35000\">%s</span>", its->word);
+        gtk_label_set_markup(GTK_LABEL(label_word), bufer);
+    } else {
+        gtk_label_set_text(GTK_LABEL(label_word), its->translation);
+        char bufer[130];
+        sprintf(bufer, "<span size=\"35000\">%s</span>", its->translation);
+        gtk_label_set_markup(GTK_LABEL(label_word), bufer);
     }
 
-    gtk_label_set_text(GTK_LABEL(label_word), its->translation);
-    char bufer[130];
-    sprintf(bufer, "<span size=\"35000\">%s</span>", its->translation);
-    gtk_label_set_markup(GTK_LABEL(label_word), bufer);
     fclose(question_word);
 
     g_queue_push_head(list, its);
-    g_signal_connect(G_OBJECT(entry_label), "activate", G_CALLBACK(check_answer_entry), list);
-    g_signal_connect(G_OBJECT(button_success), "clicked", G_CALLBACK(check_answer_entry), list);
+    g_queue_push_head(list, type_its);
+    g_signal_connect(G_OBJECT(entry_label), "activate", G_CALLBACK(enter_compare), list);
+    g_signal_connect(G_OBJECT(button_success), "clicked", G_CALLBACK(enter_compare), list);
 }
 
 int count_words()
