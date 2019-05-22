@@ -226,9 +226,16 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
     }
 }
 
+gboolean key_press_event(GtkWidget* view, GdkEventKey* event)
+{
+    g_print("test->%d\n", event->keyval);
+    return FALSE;
+}
+
 void vocabulary_win(GtkWidget* widget, gpointer data)
 {
     GtkWidget* window = (GtkWidget*)data;
+    g_signal_connect(window, "key-press-event", G_CALLBACK(key_press_event), NULL);
     GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
     gtk_container_remove(GTK_CONTAINER(window), main_box);
 
