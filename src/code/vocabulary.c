@@ -40,7 +40,7 @@ gint sortsave(GtkTreeModel* model, GtkTreeIter* a, GtkTreeIter* b, gpointer user
 void write_to_bfile(GtkWidget* button, gpointer data)
 {
     GtkWidget* window = gtk_widget_get_toplevel(button);
-
+    g_signal_handlers_disconnect_by_func(G_OBJECT(window), key_press_event, NULL);
     GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
     gtk_container_remove(GTK_CONTAINER(window), main_box);
 
@@ -228,22 +228,20 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
 
 gboolean key_press_event(GtkWidget* view, GdkEventKey* event)
 {
-    g_print("st->%d \tkey->%d\n", event->state, event->keyval);
-    if ((event->state == 16)) {
+    GtkWidget* treeview;
+    treeview = (GtkWidget*)gtk_bin_get_child(GTK_BIN((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(view))))->next->data));
+    if ((event->state == 16) || (event->state == 8208)) {
         if (event->keyval == GDK_KEY_Escape) {
-            g_print("esc\n");
-            // Вернуться в главное меню
-        } else if (event->keyval == GDK_KEY_Delete) {
-            g_print("del\n");
-            // remove_item
+            g_signal_handlers_disconnect_by_func(G_OBJECT(view), key_press_event, NULL);
+            gtk_main_quit();
         }
-    } else if ((event->state == 20)) {
-        if ((event->keyval == GDK_KEY_s) || (event->keyval == GDK_KEY_S)) {
-            g_print("Save\n");
-            // write_to_bfile
-        } else if ((event->keyval == GDK_KEY_d) || (event->keyval == GDK_KEY_D)) {
-            g_print("Add\n");
-            // add_item
+    } else if ((event->state == 20) || (event->state == 8212)) {
+        if ((event->keyval == GDK_KEY_s) || (event->keyval == GDK_KEY_S) || (event->keyval == GDK_KEY_Cyrillic_YERU) || (event->keyval == GDK_KEY_Cyrillic_yeru)) {
+            write_to_bfile(gtk_bin_get_child(GTK_BIN(view)), treeview);
+        } else if (event->keyval == GDK_KEY_Delete) {
+            remove_item(NULL, treeview);
+        } else if ((event->keyval == GDK_KEY_d) || (event->keyval == GDK_KEY_D) || (event->keyval == GDK_KEY_Cyrillic_VE) || (event->keyval == GDK_KEY_Cyrillic_ve)) {
+            add_item(NULL, treeview);
         }
     }
     return FALSE;
@@ -272,10 +270,10 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_grid_set_row_spacing((GtkGrid*)btns_box, 10);
     gtk_grid_set_column_spacing((GtkGrid*)btns_box, 10);
 
-    btn_rem_rec = gtk_button_new_with_label("Удалить запись");
-    btn_add_rec = gtk_button_new_with_label("Добавить запись");
-    btn_back = gtk_button_new_with_label("Назад");
-    btn_save = gtk_button_new_with_label("Сохранить");
+    btn_rem_rec = gtk_button_new_with_label("Удалить запись <Ctrl + Del>");
+    btn_add_rec = gtk_button_new_with_label("Добавить запись <Ctrl + D>");
+    btn_back = gtk_button_new_with_label("Назад <Esc>");
+    btn_save = gtk_button_new_with_label("Сохранить <Ctrl + S>");
 
     gtk_grid_attach((GtkGrid*)btns_box, btn_rem_rec, 0, 0, 1, 1);
     gtk_grid_attach((GtkGrid*)btns_box, btn_add_rec, 1, 0, 1, 1);
