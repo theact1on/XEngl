@@ -228,7 +228,24 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
 
 gboolean key_press_event(GtkWidget* view, GdkEventKey* event)
 {
-    g_print("test->%d\n", event->keyval);
+    g_print("st->%d \tkey->%d\n", event->state, event->keyval);
+    if ((event->state == 16)) {
+        if (event->keyval == GDK_KEY_Escape) {
+            g_print("esc\n");
+            // Вернуться в главное меню
+        } else if (event->keyval == GDK_KEY_Delete) {
+            g_print("del\n");
+            // remove_item
+        }
+    } else if ((event->state == 20)) {
+        if ((event->keyval == GDK_KEY_s) || (event->keyval == GDK_KEY_S)) {
+            g_print("Save\n");
+            // write_to_bfile
+        } else if ((event->keyval == GDK_KEY_d) || (event->keyval == GDK_KEY_D)) {
+            g_print("Add\n");
+            // add_item
+        }
+    }
     return FALSE;
 }
 
