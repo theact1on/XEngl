@@ -1,4 +1,5 @@
 #include "stats_win.h"
+#include "styles.h"
 #include "training.h"
 #include "vocabulary.h"
 #include <gtk/gtk.h>
@@ -7,9 +8,12 @@ int main(int argc, char* argv[])
 {
     GtkWidget *window, *main_box, *button_box, *main_buttons[4], *main_logo;
     gtk_init(&argc, &argv);
+    GtkCssProvider* css = set_styles();
+    gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(css), GTK_STYLE_PROVIDER_PRIORITY_USER);
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     button_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 25);
+    gtk_widget_set_name(button_box, "btn_main");
     main_buttons[0] = gtk_button_new_with_label("Начать");
     main_buttons[1] = gtk_button_new_with_label("Словарь");
     main_buttons[2] = gtk_button_new_with_label("Статистика");

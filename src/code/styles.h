@@ -2,4 +2,6 @@
 #define STYLES_H
 #include <gtk/gtk.h>
 
+GtkCssProvider* set_styles();
+
 #endif
