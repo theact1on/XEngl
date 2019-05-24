@@ -37,7 +37,8 @@ void training_win(GtkWidget* widget, gpointer data)
     gtk_container_add(GTK_CONTAINER(window), tr_box);
 
     label_name_window = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label_name_window), "<span size=\"25000\">Тренировка</span>");
+    gtk_widget_set_name(label_name_window, "header");
+    gtk_label_set_markup(GTK_LABEL(label_name_window), "Тренировка");
     gtk_box_pack_start(GTK_BOX(tr_box), label_name_window, FALSE, FALSE, 15);
 
     button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -109,6 +110,7 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
     gtk_widget_set_name(label_word, "label_question");
 
     btn_answer_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 20);
+    gtk_widget_set_name(btn_answer_box, "btn_train");
     gtk_box_pack_start(task_box, btn_answer_box, TRUE, TRUE, 0);
 
     const int NUM_BUTTONS = 7;
@@ -319,6 +321,7 @@ void results_win(GtkWidget* widget, GQueue* list)
 
     label_name_window = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(label_name_window), "<span size=\"25000\">Результаты тренировки</span>\n");
+
     gtk_box_pack_start(GTK_BOX(tr_box), label_name_window, FALSE, FALSE, 30);
     gtk_widget_set_name(label_name_window, "label_name_window_results");
 
