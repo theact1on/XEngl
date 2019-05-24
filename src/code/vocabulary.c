@@ -261,19 +261,21 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
 
     label = gtk_label_new(NULL);
     gtk_box_pack_start(GTK_BOX(voc_box), label, FALSE, FALSE, 30);
+    gtk_widget_set_name(label, "header");
     gtk_label_set_markup(GTK_LABEL(label), "Словарь");
 
     btns_box = gtk_grid_new();
+    gtk_widget_set_name(btns_box, "btn_voc");
     gtk_box_pack_end(GTK_BOX(voc_box), btns_box, FALSE, FALSE, 0);
     gtk_grid_set_row_homogeneous((GtkGrid*)btns_box, TRUE);
     gtk_grid_set_column_homogeneous((GtkGrid*)btns_box, TRUE);
     gtk_grid_set_row_spacing((GtkGrid*)btns_box, 10);
     gtk_grid_set_column_spacing((GtkGrid*)btns_box, 10);
 
-    btn_rem_rec = gtk_button_new_with_label("Удалить запись <Ctrl + Del>");
-    btn_add_rec = gtk_button_new_with_label("Добавить запись <Ctrl + D>");
-    btn_back = gtk_button_new_with_label("Назад <Esc>");
-    btn_save = gtk_button_new_with_label("Сохранить <Ctrl + S>");
+    btn_rem_rec = gtk_button_new_with_label("Удалить запись");
+    btn_add_rec = gtk_button_new_with_label("Добавить запись");
+    btn_back = gtk_button_new_with_label("Назад");
+    btn_save = gtk_button_new_with_label("Сохранить");
 
     gtk_grid_attach((GtkGrid*)btns_box, btn_rem_rec, 0, 0, 1, 1);
     gtk_grid_attach((GtkGrid*)btns_box, btn_add_rec, 1, 0, 1, 1);
@@ -332,7 +334,7 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_widget_destroy(spinner);
     gtk_widget_show_all(voc_box);
     gtk_main();
-
+    g_signal_handlers_disconnect_by_func(window, key_press_event, NULL);
     gtk_widget_destroy(voc_box);
     gtk_container_add(GTK_CONTAINER(window), main_box);
     gtk_widget_show_all(window);

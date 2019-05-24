@@ -13,7 +13,8 @@ void stats_win(GtkWidget* widget, gpointer data)
     gtk_container_add(GTK_CONTAINER(window), stats_box);
 
     label = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label), "<span size=\"25000\">Статистика</span>");
+    gtk_widget_set_name(label, "header");
+    gtk_label_set_markup(GTK_LABEL(label), "Статистика");
     gtk_box_pack_start(GTK_BOX(stats_box), label, FALSE, FALSE, 30);
 
     btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
