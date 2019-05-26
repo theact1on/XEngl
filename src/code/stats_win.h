@@ -10,4 +10,5 @@ struct stats_rec {
 void stats_win(GtkWidget* widget, gpointer data);
 void setup_table(GtkWidget* treeview);
 void del_stats(GtkWidget* widget, gpointer data);
+gboolean key_press_event_stats(GtkWidget* view, GdkEventKey* event);
 #endif
