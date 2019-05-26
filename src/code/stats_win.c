@@ -13,7 +13,8 @@ void stats_win(GtkWidget* widget, gpointer data)
     gtk_container_add(GTK_CONTAINER(window), stats_box);
 
     label = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(label), "<span size=\"25000\">Статистика</span>");
+    gtk_widget_set_name(label, "header");
+    gtk_label_set_markup(GTK_LABEL(label), "Статистика");
     gtk_box_pack_start(GTK_BOX(stats_box), label, FALSE, FALSE, 30);
 
     btn_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -96,6 +97,8 @@ void setup_table(GtkWidget* treeview)
     for (int i = 0; i < 4; i++) {
         renderer = gtk_cell_renderer_text_new();
         column = gtk_tree_view_column_new_with_attributes(names_columns[i], renderer, "text", i, NULL);
+        gtk_tree_view_column_set_alignment(column, 0.5); // Выравнивание по центру
+        gtk_tree_view_column_set_expand(column, TRUE);   // Равное разбиение между столбцами
         gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
     }
     return;
