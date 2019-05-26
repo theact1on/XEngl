@@ -34,6 +34,7 @@ void training_win(GtkWidget* widget, gpointer data)
 
     gtk_container_remove(GTK_CONTAINER(window), main_box);
     tr_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_widget_set_name(tr_box, "tr_box");
     gtk_container_add(GTK_CONTAINER(window), tr_box);
 
     label_name_window = gtk_label_new(NULL);

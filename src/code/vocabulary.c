@@ -283,6 +283,7 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_grid_attach((GtkGrid*)btns_box, btn_save, 1, 1, 1, 1);
 
     sw = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_set_border_width(GTK_CONTAINER(sw), 15);
     gtk_box_pack_start(GTK_BOX(voc_box), sw, TRUE, TRUE, 0);
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw), GTK_SHADOW_ETCHED_IN);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);

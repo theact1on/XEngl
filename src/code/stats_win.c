@@ -97,6 +97,8 @@ void setup_table(GtkWidget* treeview)
     for (int i = 0; i < 4; i++) {
         renderer = gtk_cell_renderer_text_new();
         column = gtk_tree_view_column_new_with_attributes(names_columns[i], renderer, "text", i, NULL);
+        gtk_tree_view_column_set_alignment(column, 0.5); // Выравнивание по центру
+        gtk_tree_view_column_set_expand(column, TRUE);   // Равное разбиение между столбцами
         gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
     }
     return;
