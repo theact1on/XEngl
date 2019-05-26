@@ -1,8 +1,29 @@
 #include "stats_win.h"
 
+gboolean key_press_event_stats(GtkWidget* view, GdkEventKey* event)
+{
+    GtkWidget* btn;
+    btn = (GtkWidget*)(gtk_container_get_children(GTK_CONTAINER((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(view))))->next->next->data))->next->data);
+    GtkWidget* treeview;
+    treeview = (GtkWidget*)gtk_bin_get_child(GTK_BIN((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(view))))->next->data));
+
+    if ((event->state == GDK_CONTROL_MASK)) {
+        if (event->keyval == GDK_KEY_Delete) {
+            del_stats(btn, (GtkListStore*)gtk_tree_view_get_model((GtkTreeView*)treeview));
+        }
+    } else {
+        if (event->keyval == GDK_KEY_Escape) {
+            g_signal_handlers_disconnect_by_func(G_OBJECT(view), key_press_event_stats, NULL);
+            gtk_main_quit();
+        }
+    }
+    return FALSE;
+}
+
 void stats_win(GtkWidget* widget, gpointer data)
 {
     GtkWidget* window = (GtkWidget*)data;
+    g_signal_connect(window, "key-press-event", G_CALLBACK(key_press_event_stats), NULL);
     GtkWidget *stats_box, *btn_box, *btn_back, *btn_del_stats, *treeview, *scrolled_win, *label, *spinner;
     GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
     GtkListStore* store;
@@ -80,6 +101,8 @@ void stats_win(GtkWidget* widget, gpointer data)
     gtk_widget_show_all(stats_box);
 
     gtk_main();
+
+    g_signal_handlers_disconnect_by_func(window, key_press_event_stats, NULL);
 
     gtk_widget_destroy(stats_box);
     gtk_container_add(GTK_CONTAINER(window), main_box);
