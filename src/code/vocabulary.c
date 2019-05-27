@@ -147,30 +147,30 @@ void remove_item(GtkWidget* widget, gpointer data)
         gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 }
 
+_Bool check_valid_char(gint position, gchar character)
+{
+    gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`№;:?.<>,[]{}()-=/\"\\|";
+    for (int j = 0; j < strlen(ignored_characters); j++) {
+        if (position == 0)
+            if (character == ' ') {
+                return TRUE;
+                break;
+            }
+        if (character == ignored_characters[j]) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 void insert_text(GtkEntry* entry, const gchar* text, gint len, gint* position, gpointer data)
 {
     GtkEditable* editable = GTK_EDITABLE(entry);
     int i, count = 0;
     gchar* result = g_new(gchar, len);
-    gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`№;:?.<>,[]{}()-=/\"\\|";
-    int flag;
 
     for (i = 0; i < len; i++) {
-        flag = 0;
-
-        for (int j = 0; j < strlen(ignored_characters); j++) {
-            if (*position == 0)
-                if (text[i] == ' ') {
-                    flag = 1;
-                    break;
-                }
-            if (text[i] == ignored_characters[j]) {
-                flag = 1;
-                break;
-            }
-        }
-
-        if (flag)
+        if (check_valid_char(*position, text[i]))
             continue;
         result[count] = text[i];
         count++;
