@@ -212,9 +212,10 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
 
 gboolean key_press_event_voc(GtkWidget* view, GdkEventKey* event)
 {
+    // g_print("%d + %d \n", event->state, event->keyval);
     GtkWidget* treeview;
     treeview = (GtkWidget*)gtk_bin_get_child(GTK_BIN((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(gtk_bin_get_child(GTK_BIN(view))))))->next->data));
-    if ((event->state == GDK_CONTROL_MASK)) {
+    if ((event->state & gtk_accelerator_get_default_mod_mask()) == GDK_CONTROL_MASK) {
         if ((event->keyval == GDK_KEY_s) || (event->keyval == GDK_KEY_S) || (event->keyval == GDK_KEY_Cyrillic_YERU) || (event->keyval == GDK_KEY_Cyrillic_yeru)) {
             write_to_bfile(gtk_bin_get_child(GTK_BIN(view)), treeview);
         } else if (event->keyval == GDK_KEY_Delete) {
