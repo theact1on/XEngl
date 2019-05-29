@@ -21,30 +21,39 @@ void training_win(GtkWidget* widget, gpointer data)
     int all_count_words = 0;
     int success_count_words = 0;
     int breakout = 0;
+    int info_bar_showed = 0;
     task_function types_of_task[2] = {four_buttons_task, enter_translate_task};
     GtkWidget* window = (GtkWidget*)data;
     GtkWidget *tr_box, *label_name_window, *task_box, *button_box, *btn_next, *btn_end;
-    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    GtkWidget* main_overlay = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(main_overlay)));
     GtkWidget* info_bar = gtk_info_bar_new();
+    gtk_widget_set_name(info_bar, "error_bar");
+    GtkWidget* label_error = gtk_label_new("");
+    GtkWidget* content_area = gtk_info_bar_get_content_area(GTK_INFO_BAR(info_bar));
+    g_signal_connect(info_bar, "response", G_CALLBACK(gtk_widget_destroy), NULL);
+    gtk_container_add(GTK_CONTAINER(content_area), label_error);
+    gtk_info_bar_set_show_close_button(GTK_INFO_BAR(info_bar), TRUE);
+    gtk_widget_set_valign(info_bar, GTK_ALIGN_START);
+    gtk_info_bar_set_revealed(GTK_INFO_BAR(info_bar), FALSE);
+
+    gtk_container_forall(GTK_CONTAINER(main_overlay), detect_info_bar, (gpointer)&info_bar_showed);
 
     if (num_of_words == 0) {
         breakout = 1;
-        if (!GTK_IS_INFO_BAR(gtk_container_get_children(GTK_CONTAINER(main_box))->data)) {
-            GtkWidget* label_error = gtk_label_new("Словарь пуст");
-            GtkWidget* content_area = gtk_info_bar_get_content_area(GTK_INFO_BAR(info_bar));
+        if (!info_bar_showed) {
+            gtk_label_set_text(GTK_LABEL(label_error), "Словарь пуст");
             gtk_info_bar_set_message_type(GTK_INFO_BAR(info_bar), GTK_MESSAGE_ERROR);
-            gtk_box_pack_start(GTK_BOX(main_box), info_bar, FALSE, FALSE, 0);
-            gtk_info_bar_set_show_close_button(GTK_INFO_BAR(info_bar), TRUE);
-            gtk_widget_show(info_bar);
-            g_signal_connect(info_bar, "response", G_CALLBACK(gtk_widget_destroy), NULL);
-            gtk_container_add(GTK_CONTAINER(content_area), label_error);
+            gtk_overlay_add_overlay(GTK_OVERLAY(main_overlay), info_bar);
         }
+    } else if (info_bar_showed == 1) {
+        gtk_container_forall(GTK_CONTAINER(main_overlay), detect_info_bar, (gpointer)&info_bar_showed);
     }
 
-    gtk_container_remove(GTK_CONTAINER(window), main_box);
+    gtk_container_remove(GTK_CONTAINER(main_overlay), main_box);
     tr_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_name(tr_box, "tr_box");
-    gtk_container_add(GTK_CONTAINER(window), tr_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), tr_box);
 
     label_name_window = gtk_label_new(NULL);
     gtk_widget_set_name(label_name_window, "header");
@@ -89,19 +98,27 @@ void training_win(GtkWidget* widget, gpointer data)
         task_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         gtk_box_pack_start(GTK_BOX(tr_box), task_box, TRUE, TRUE, 30);
         gtk_box_reorder_child(GTK_BOX(tr_box), task_box, 1);
-        types_of_task[rand_type_task](GTK_BOX(task_box), num_of_words, &success_count_words, btn_end, btn_next);
+        types_of_task[rand_type_task](GTK_BOX(task_box), num_of_words, &success_count_words, btn_end, btn_next, &breakout);
         gtk_widget_set_sensitive(btn_end, FALSE);
         gtk_widget_set_sensitive(btn_next, FALSE);
         gtk_widget_show_all(tr_box);
+        if (breakout == 2) {
+            gtk_label_set_text(GTK_LABEL(label_error), "Не удалось открыть файл словаря во время тренировки");
+            gtk_info_bar_set_message_type(GTK_INFO_BAR(info_bar), GTK_MESSAGE_ERROR);
+            gtk_overlay_add_overlay(GTK_OVERLAY(main_overlay), info_bar);
+            break;
+        }
         gtk_main();
     }
 
     gtk_widget_destroy(tr_box);
-    gtk_container_add(GTK_CONTAINER(window), main_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), main_box);
     gtk_widget_show_all(window);
+    gtk_info_bar_set_revealed(GTK_INFO_BAR(info_bar), FALSE);
+    gtk_info_bar_set_revealed(GTK_INFO_BAR(info_bar), TRUE);
 }
 
-void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
+void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next, int* breakout)
 {
     GQueue* list;
     list = g_queue_new();
@@ -135,6 +152,10 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
     char bufer[130];
     rand_word[3] = rand() % N_WORDS + NUM_DEF_WORDS;
     FILE* question_word = fopen("data/voc.dat", "rb");
+    if (question_word == NULL) {
+        *breakout = 2;
+        return;
+    }
     fseek(question_word, rand_word[3] * sizeof(struct Item), 0);
     fread(its, sizeof(struct Item), 1, question_word);
     rand_word_item[3] = *its;
@@ -182,7 +203,7 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
     fclose(question_word);
 }
 
-void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next)
+void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_words, GtkWidget* btn_end, GtkWidget* btn_next, int* breakout)
 {
     GQueue* list;
     list = g_queue_new();
@@ -226,6 +247,10 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     int* type_its = (int*)malloc(sizeof(int));
     *type_its = rand() % 2 + 1;
     FILE* question_word = fopen("data/voc.dat", "rb");
+    if (question_word == NULL) {
+        *breakout = 2;
+        return;
+    }
     fseek(question_word, rand_word * sizeof(struct Item) + NUM_DEF_WORDS * sizeof(struct Item), 0);
     fread(its, sizeof(struct Item), 1, question_word);
 
