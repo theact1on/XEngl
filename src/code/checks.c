@@ -1,4 +1,20 @@
-#include "train_check_ans.h"
+#include "checks.h"
+
+_Bool check_valid_char(gint position, gchar character)
+{
+    gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`№;:?.<>,[]{}()-=/\"\\|";
+    for (int j = 0; j < strlen(ignored_characters); j++) {
+        if (position == 0)
+            if (character == ' ') {
+                return TRUE;
+                break;
+            }
+        if (character == ignored_characters[j]) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 
 void button_compare(GtkWidget* widget, GQueue* list)
 {

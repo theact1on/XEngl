@@ -1,8 +1,7 @@
 #include "training.h"
+#include "checks.h"
 #include "default_words.h"
 #include "stats_win.h"
-#include "train_check_ans.h"
-#include "vocabulary.h"
 
 void training_win(GtkWidget* widget, gpointer data)
 {

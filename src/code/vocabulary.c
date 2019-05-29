@@ -1,5 +1,4 @@
 #include "vocabulary.h"
-#include "default_words.h"
 
 void read_from_bfile(GtkListStore* model)
 {
@@ -145,22 +144,6 @@ void remove_item(GtkWidget* widget, gpointer data)
 
     if (gtk_tree_selection_get_selected(selection, NULL, &iter))
         gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-}
-
-_Bool check_valid_char(gint position, gchar character)
-{
-    gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`№;:?.<>,[]{}()-=/\"\\|";
-    for (int j = 0; j < strlen(ignored_characters); j++) {
-        if (position == 0)
-            if (character == ' ') {
-                return TRUE;
-                break;
-            }
-        if (character == ignored_characters[j]) {
-            return TRUE;
-        }
-    }
-    return FALSE;
 }
 
 void insert_text(GtkEntry* entry, const gchar* text, gint len, gint* position, gpointer data)
