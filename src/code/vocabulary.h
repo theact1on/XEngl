@@ -1,13 +1,11 @@
 #ifndef VOCABULARY_H
 #define VOCABULARY_H
+#include "checks.h"
+#include "default_words.h"
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 
-struct Item {
-    char word[100];
-    char translation[100];
-};
 gboolean key_press_event_voc(GtkWidget* view, GdkEventKey* event);
 void vocabulary_win(GtkWidget*, gpointer);
 void read_from_bfile(GtkListStore* model);

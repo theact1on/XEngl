@@ -1,6 +1,6 @@
 #ifndef DEFAULT_WORDS_H
 #define DEFAULT_WORDS_H
-#include "vocabulary.h"
+#include "checks.h"
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>

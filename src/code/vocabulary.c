@@ -1,5 +1,4 @@
 #include "vocabulary.h"
-#include "default_words.h"
 
 void read_from_bfile(GtkListStore* model)
 {
@@ -152,25 +151,9 @@ void insert_text(GtkEntry* entry, const gchar* text, gint len, gint* position, g
     GtkEditable* editable = GTK_EDITABLE(entry);
     int i, count = 0;
     gchar* result = g_new(gchar, len);
-    gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`№;:?.<>,[]{}()-=/\"\\|";
-    int flag;
 
     for (i = 0; i < len; i++) {
-        flag = 0;
-
-        for (int j = 0; j < strlen(ignored_characters); j++) {
-            if (*position == 0)
-                if (text[i] == ' ') {
-                    flag = 1;
-                    break;
-                }
-            if (text[i] == ignored_characters[j]) {
-                flag = 1;
-                break;
-            }
-        }
-
-        if (flag)
+        if (check_valid_char(*position, text[i]))
             continue;
         result[count] = text[i];
         count++;
