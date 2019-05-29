@@ -3,6 +3,16 @@
 #include "default_words.h"
 #include "stats_win.h"
 
+void detect_info_bar(GtkWidget* widget, gpointer data)
+{
+    if (GTK_IS_INFO_BAR(widget) && *(int*)data == 0) {
+        *(int*)data = 1;
+    } else if (GTK_IS_INFO_BAR(widget)) {
+        gtk_widget_destroy(widget);
+        *(int*)data = 0;
+    }
+}
+
 void training_win(GtkWidget* widget, gpointer data)
 {
     srand(time(NULL));
