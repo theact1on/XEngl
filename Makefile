@@ -1,4 +1,4 @@
-.PHONY: all clean run run_test
+.PHONY: all clean run run_test dirs
 
 PROJECT    := XEngl
 TEST    := XEngl_test
@@ -16,9 +16,9 @@ BUILDC     := build/code
 BUILDT     := build/tests
 BIN        := bin
 OBJECTSC   := $(patsubst $(SRCC)/%.c,$(BUILDC)/%.o,$(wildcard $(SRCC)/*.c))
-OBJECTST   := $(patsubst $(SRCT)/%.c,$(BUILDT)/%.o,$(wildcard $(SRCT)/*.c))
+OBJECTST   := $(patsubst $(SRCT)/%.c,$(BUILDT)/%.o,$(wildcard $(SRCT)/*.c)) $(BUILDT)/checks.o
 
-all: dirs $(BIN)/$(PROJECT) $(BIN)/$(TEST)
+all: dirs $(BIN)/$(PROJECT)  $(BIN)/$(TEST)
 
 -include $(BUILDC)/*.d
 
@@ -45,7 +45,7 @@ $(BUILDC)/%.o: $(SRCC)/%.c
 		exit 1; \
 	fi
 
-run: $(BIN)/$(PROJECT)
+run: dirs $(BIN)/$(PROJECT)
 	$(BIN)/$(PROJECT)
 
 # Compiling tests
@@ -54,7 +54,7 @@ run: $(BIN)/$(PROJECT)
 
 $(BIN)/$(TEST): $(OBJECTST)
 	@printf "\033[0;33m%s \033[0m%s %s\r" "[WAITING]" " Compiling: " $@
-	@if $(COMPILER) $(FLAGS)  $@ $^ 2>error.log; then \
+	@if $(COMPILER) $(GTK_CFLAGS) $(FLAGS)  $@ $^ $(GTK_LIBS) 2>error.log; then \
 		printf "\033[0;32m%s \033[0m%s %s\n"  "   [OK]  " " Compiling: " $@; \
 		printf "\033[0;32m%s \033[0m%s\n"  "   [OK]  " " The tests were compiled successfuly. "; \
 	else  \
@@ -67,7 +67,7 @@ $(BIN)/$(TEST): $(OBJECTST)
 
 $(BUILDT)/%.o: $(SRCT)/%.c
 	@printf "\033[0;33m%s \033[0m%s %s\r" "[WAITING]" " Compiling: " $@
-	@if $(COMPILER) -MMD -c -I thirdparty $(FLAGS) $@ $< 2>error.log; then \
+	@if $(COMPILER) $(GTK_CFLAGS) -I thirdparty -I src/code -MMD -c $(FLAGS) $@ $< $(GTK_LIBS)  2>error.log; then \
 		printf "\033[0;32m%s \033[0m%s %s\n"  "   [OK]  " " Compiling: " $@; \
 	else  \
 		printf "\033[0;31m%s \033[0m%s %s\n"  "[FAILING]" " Compiling: " $@; \
@@ -75,7 +75,17 @@ $(BUILDT)/%.o: $(SRCT)/%.c
 		exit 1; \
 	fi
 
-run_test: $(BIN)/$(TEST)
+$(BUILDT)/checks.o: $(SRCC)/checks.c
+	@printf "\033[0;33m%s \033[0m%s %s\r" "[WAITING]" " Compiling: " $@
+	@if $(COMPILER) $(GTK_CFLAGS) -MMD -c $(FLAGS) $@ $< $(GTK_LIBS)  2>error.log; then \
+		printf "\033[0;32m%s \033[0m%s %s\n"  "   [OK]  " " Compiling: " $@; \
+	else  \
+		printf "\033[0;31m%s \033[0m%s %s\n"  "[FAILING]" " Compiling: " $@; \
+		cat error.log; \
+		exit 1; \
+	fi
+
+run_test: dirs $(BIN)/$(TEST)
 	$(BIN)/$(TEST)
 
 dirs:
