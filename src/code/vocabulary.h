@@ -2,6 +2,7 @@
 #define VOCABULARY_H
 #include "checks.h"
 #include "default_words.h"
+#include "training.h"
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>

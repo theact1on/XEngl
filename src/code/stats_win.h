@@ -1,5 +1,6 @@
 #ifndef STATS_WIN_H
 #define STATS_WIN_H
+#include "training.h"
 #include <gtk/gtk.h>
 #include <stdlib.h>
 struct stats_rec {

@@ -6,11 +6,13 @@
 #include <stdlib.h>
 int main(int argc, char* argv[])
 {
-    GtkWidget *window, *main_box, *btns_box, *main_buttons[4], *main_logo;
+    GtkWidget *window, *main_box, *btns_box, *main_buttons[4], *main_logo, *main_overlay;
+    ;
     gtk_init(&argc, &argv);
     GtkCssProvider* css = set_styles();
     gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(css), GTK_STYLE_PROVIDER_PRIORITY_USER);
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    main_overlay = gtk_overlay_new();
     main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     btns_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 25);
     gtk_widget_set_name(btns_box, "btn_main");
@@ -38,7 +40,8 @@ int main(int argc, char* argv[])
     gtk_box_pack_start(GTK_BOX(btns_box), main_buttons[2], TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(btns_box), main_buttons[3], TRUE, TRUE, 0);
 
-    gtk_container_add(GTK_CONTAINER(window), main_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), main_box);
+    gtk_container_add(GTK_CONTAINER(window), main_overlay);
     gtk_widget_show_all(window);
     gtk_main();
     return 0;
