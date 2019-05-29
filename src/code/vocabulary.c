@@ -40,11 +40,12 @@ void write_to_bfile(GtkWidget* button, gpointer data)
 {
     GtkWidget* window = gtk_widget_get_toplevel(button);
     g_signal_handlers_disconnect_by_func(G_OBJECT(window), key_press_event_voc, NULL);
-    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
-    gtk_container_remove(GTK_CONTAINER(window), main_box);
+    GtkWidget* main_overlay = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(main_overlay)));
+    gtk_container_remove(GTK_CONTAINER(main_overlay), main_box);
 
     GtkWidget* spin_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_container_add(GTK_CONTAINER(window), spin_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), spin_box);
 
     /* Спиннер */
     GtkWidget* spinner = gtk_spinner_new();
@@ -91,7 +92,7 @@ void write_to_bfile(GtkWidget* button, gpointer data)
     gtk_widget_show_all(spin_box);
     gtk_main_quit();
     gtk_widget_destroy(spin_box);
-    gtk_container_add(GTK_CONTAINER(window), main_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), main_box);
     gtk_widget_show_all(window);
 }
 
@@ -212,7 +213,7 @@ void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gcha
 gboolean key_press_event_voc(GtkWidget* view, GdkEventKey* event)
 {
     GtkWidget* treeview;
-    treeview = (GtkWidget*)gtk_bin_get_child(GTK_BIN((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(view))))->next->data));
+    treeview = (GtkWidget*)gtk_bin_get_child(GTK_BIN((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(gtk_bin_get_child(GTK_BIN(view))))))->next->data));
     if ((event->state == GDK_CONTROL_MASK)) {
         if ((event->keyval == GDK_KEY_s) || (event->keyval == GDK_KEY_S) || (event->keyval == GDK_KEY_Cyrillic_YERU) || (event->keyval == GDK_KEY_Cyrillic_yeru)) {
             write_to_bfile(gtk_bin_get_child(GTK_BIN(view)), treeview);
@@ -235,11 +236,15 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     GtkWidget* window = (GtkWidget*)data;
 
     g_signal_connect(window, "key-press-event", G_CALLBACK(key_press_event_voc), NULL);
-    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
-    gtk_container_remove(GTK_CONTAINER(window), main_box);
+    GtkWidget* main_overlay = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(main_overlay)));
+    gtk_container_remove(GTK_CONTAINER(main_overlay), main_box);
+
+    int info_bar_showed = 1;
+    gtk_container_forall(GTK_CONTAINER(main_overlay), detect_info_bar, (gpointer)&info_bar_showed);
 
     GtkWidget* voc_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_container_add(GTK_CONTAINER(window), voc_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), voc_box);
 
     GtkWidget *label, *btns_box, *btn_add_rec, *btn_rem_rec, *btn_back, *btn_save, *treeview, *sw;
 
@@ -321,6 +326,6 @@ void vocabulary_win(GtkWidget* widget, gpointer data)
     gtk_main();
     g_signal_handlers_disconnect_by_func(window, key_press_event_voc, NULL);
     gtk_widget_destroy(voc_box);
-    gtk_container_add(GTK_CONTAINER(window), main_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), main_box);
     gtk_widget_show_all(window);
 }
