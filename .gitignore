@@ -1,5 +1,6 @@
 # IGNORE LIST OF PROJECT FILES
 /bin/
+/include_gtk/
 /build/
 /data/
 /.vscode/
