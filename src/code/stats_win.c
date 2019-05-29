@@ -3,9 +3,10 @@
 gboolean key_press_event_stats(GtkWidget* view, GdkEventKey* event)
 {
     GtkWidget* btn;
-    btn = (GtkWidget*)(gtk_container_get_children(GTK_CONTAINER((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(view))))->next->next->data))->next->data);
+    btn = (GtkWidget*)(gtk_container_get_children(GTK_CONTAINER((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(gtk_bin_get_child(GTK_BIN(view))))))->next->next->data))
+                               ->next->data);
     GtkWidget* treeview;
-    treeview = (GtkWidget*)gtk_bin_get_child(GTK_BIN((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(view))))->next->data));
+    treeview = (GtkWidget*)gtk_bin_get_child(GTK_BIN((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(gtk_bin_get_child(GTK_BIN(view))))))->next->data));
 
     if ((event->state == GDK_CONTROL_MASK)) {
         if (event->keyval == GDK_KEY_Delete) {
@@ -25,13 +26,17 @@ void stats_win(GtkWidget* widget, gpointer data)
     GtkWidget* window = (GtkWidget*)data;
     g_signal_connect(window, "key-press-event", G_CALLBACK(key_press_event_stats), NULL);
     GtkWidget *stats_box, *btn_box, *btn_back, *btn_del_stats, *treeview, *scrolled_win, *label, *spinner;
-    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    GtkWidget* main_overlay = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(window)));
+    GtkWidget* main_box = g_object_ref((GtkWidget*)gtk_bin_get_child(GTK_BIN(main_overlay)));
     GtkListStore* store;
     GtkTreeIter iter;
 
-    gtk_container_remove(GTK_CONTAINER(window), main_box);
+    int info_bar_showed = 1;
+    gtk_container_forall(GTK_CONTAINER(main_overlay), detect_info_bar, (gpointer)&info_bar_showed);
+
+    gtk_container_remove(GTK_CONTAINER(main_overlay), main_box);
     stats_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_container_add(GTK_CONTAINER(window), stats_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), stats_box);
 
     label = gtk_label_new(NULL);
     gtk_widget_set_name(label, "header");
@@ -105,7 +110,7 @@ void stats_win(GtkWidget* widget, gpointer data)
     g_signal_handlers_disconnect_by_func(window, key_press_event_stats, NULL);
 
     gtk_widget_destroy(stats_box);
-    gtk_container_add(GTK_CONTAINER(window), main_box);
+    gtk_container_add(GTK_CONTAINER(main_overlay), main_box);
     gtk_widget_show_all(window);
     return;
 }
