@@ -8,7 +8,7 @@ gboolean key_press_event_stats(GtkWidget* view, GdkEventKey* event)
     GtkWidget* treeview;
     treeview = (GtkWidget*)gtk_bin_get_child(GTK_BIN((GtkWidget*)gtk_container_get_children(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(gtk_bin_get_child(GTK_BIN(view))))))->next->data));
 
-    if ((event->state == GDK_CONTROL_MASK)) {
+    if ((event->state & gtk_accelerator_get_default_mod_mask()) == GDK_CONTROL_MASK) {
         if (event->keyval == GDK_KEY_Delete) {
             del_stats(btn, (GtkListStore*)gtk_tree_view_get_model((GtkTreeView*)treeview));
         }
