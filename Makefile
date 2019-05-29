@@ -18,7 +18,7 @@ BIN        := bin
 OBJECTSC   := $(patsubst $(SRCC)/%.c,$(BUILDC)/%.o,$(wildcard $(SRCC)/*.c))
 OBJECTST   := $(patsubst $(SRCT)/%.c,$(BUILDT)/%.o,$(wildcard $(SRCT)/*.c)) $(BUILDT)/checks.o
 
-all: dirs $(BIN)/$(PROJECT)  $(BIN)/$(TEST)
+all: dirs $(BIN)/$(PROJECT) $(BIN)/$(TEST)
 
 -include $(BUILDC)/*.d
 

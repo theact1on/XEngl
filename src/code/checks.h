@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <gtk/gtk.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 struct Item {
     char word[100];
