@@ -171,7 +171,7 @@ void cell_edit(GtkCellRenderer* renderer, GtkCellEditable* editable, gchar* path
 {
     if (g_utf8_collate(gtk_entry_get_text((GtkEntry*)editable), "'Слово'") == 0 || g_utf8_collate(gtk_entry_get_text((GtkEntry*)editable), "'Перевод'") == 0)
         gtk_entry_set_text((GtkEntry*)editable, "");
-    gtk_entry_set_max_length((GtkEntry*)editable, 99); // ограничение ввода
+    gtk_entry_set_max_length((GtkEntry*)editable, 35); // ограничение ввода
     g_signal_connect(G_OBJECT(editable), "insert_text", G_CALLBACK(insert_text), NULL);
 }
 void cell_edited(GtkCellRendererText* cell, const gchar* path_string, const gchar* new_text, gpointer data)
