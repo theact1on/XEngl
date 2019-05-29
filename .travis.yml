@@ -1,12 +1,8 @@
 dist: xenial
 language: c
-addons:
-    apt:
-        packages:
-            - libgtk-3-dev
 script:
   - git ls-files src/code/ | xargs clang-format -i && git diff --exit-code
   - make
-  - make run_test
+  - make test && bin/XEngl_test
 compiler:
   - gcc
