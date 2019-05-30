@@ -117,12 +117,9 @@ GtkCssProvider* set_styles()
                 "color: #007bff;"
             "}"
             "/* Меню тренировки */"
-            "label#label_question {"
+            "#scrolled_win_training {"
                 "color: #212529;"
                 "border: 5px dotted rgba(90, 97, 105, 0.5);"
-                "margin-right:2rem;"
-                "margin-left:2rem;"
-                "margin-bottom:2rem;"
             "}"
 
             "label#label_name_window_results {"
