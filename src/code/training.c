@@ -126,12 +126,20 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
     g_queue_push_head(list, btn_next);
 
     srand(time(NULL));
-    GtkWidget *label_word, *btn_answer_box, *answer_buttons[4];
+    GtkWidget *label_word, *btn_answer_box, *answer_buttons[4], *scrolled_win;
     struct Item* its = (struct Item*)malloc(sizeof(struct Item));
     struct Item fail;
 
     label_word = gtk_label_new("LOADING...");
-    gtk_box_pack_start(task_box, label_word, FALSE, FALSE, 0);
+    scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+
+    gtk_container_add(GTK_CONTAINER(scrolled_win), label_word);
+    gtk_widget_set_margin_end(scrolled_win, 15);
+    gtk_widget_set_margin_start(scrolled_win, 15);
+    gtk_box_pack_start(task_box, scrolled_win, FALSE, FALSE, 0);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(scrolled_win), 100);
+    gtk_widget_set_name(scrolled_win, "scrolled_win_training");
 
     gtk_widget_set_name(label_word, "label_question");
 
@@ -162,15 +170,15 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
     g_queue_push_head(list, its);
 
     if (*type_its == 1) {
-        gtk_label_set_text(GTK_LABEL(label_word), its->word);
-        sprintf(bufer, "<span size=\"35000\">%s</span>", its->word);
+        gtk_label_set_text(GTK_LABEL(label_word), g_utf8_strup(its->word, -1));
+        sprintf(bufer, "<span size=\"35000\">%s</span>", g_utf8_strup(its->word, -1));
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
-        answer_buttons[3] = gtk_button_new_with_label(its->translation);
+        answer_buttons[3] = gtk_button_new_with_label(g_utf8_strup(its->translation, -1));
     } else {
-        gtk_label_set_text(GTK_LABEL(label_word), its->translation);
-        sprintf(bufer, "<span size=\"35000\">%s</span>", its->translation);
+        gtk_label_set_text(GTK_LABEL(label_word), g_utf8_strup(its->translation, -1));
+        sprintf(bufer, "<span size=\"35000\">%s</span>", g_utf8_strup(its->translation, -1));
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
-        answer_buttons[3] = gtk_button_new_with_label(its->word);
+        answer_buttons[3] = gtk_button_new_with_label(g_utf8_strup(its->word, -1));
     }
 
     g_queue_push_head(list, answer_buttons[3]);
@@ -185,9 +193,9 @@ void four_buttons_task(GtkBox* task_box, int N_WORDS, int* success_count_words, 
                  || compare_structs(&rand_word_item[i], &rand_word_item[i - 3]));
 
         if (*type_its == 1) {
-            answer_buttons[i - 4] = gtk_button_new_with_label(fail.translation);
+            answer_buttons[i - 4] = gtk_button_new_with_label(g_utf8_strup(fail.translation, -1));
         } else {
-            answer_buttons[i - 4] = gtk_button_new_with_label(fail.word);
+            answer_buttons[i - 4] = gtk_button_new_with_label(g_utf8_strup(fail.word, -1));
         }
 
         g_queue_push_head(list, answer_buttons[i - 4]);
@@ -210,10 +218,19 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     g_queue_push_head(list, btn_end);
     g_queue_push_head(list, btn_next);
 
-    GtkWidget *label_word, *entry_answer_box, *entry_label, *button_success, *right_word;
+    GtkWidget *label_word, *entry_answer_box, *entry_label, *button_success, *right_word, *scrolled_win_question, *scrolled_win_right_word;
     srand(time(NULL));
+
     label_word = gtk_label_new("LOADING...");
-    gtk_box_pack_start(task_box, label_word, FALSE, FALSE, 0);
+    scrolled_win_question = gtk_scrolled_window_new(NULL, NULL);
+
+    gtk_container_add(GTK_CONTAINER(scrolled_win_question), label_word);
+    gtk_widget_set_margin_end(scrolled_win_question, 15);
+    gtk_widget_set_margin_start(scrolled_win_question, 15);
+    gtk_box_pack_start(task_box, scrolled_win_question, FALSE, FALSE, 0);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win_question), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(scrolled_win_question), 100);
+    gtk_widget_set_name(scrolled_win_question, "scrolled_win_training");
 
     gtk_widget_set_name(label_word, "label_question");
 
@@ -223,9 +240,14 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     gtk_widget_set_name(entry_answer_box, "entry_answer_box");
 
     right_word = gtk_label_new(NULL);
-    gtk_box_pack_start(GTK_BOX(entry_answer_box), right_word, FALSE, FALSE, 0);
 
-    gtk_widget_set_name(right_word, "right_word_hide");
+    scrolled_win_right_word = gtk_scrolled_window_new(NULL, NULL);
+
+    gtk_container_add(GTK_CONTAINER(scrolled_win_right_word), right_word);
+    gtk_widget_set_margin_top(scrolled_win_right_word, 75);
+    gtk_box_pack_start(GTK_BOX(entry_answer_box), scrolled_win_right_word, FALSE, FALSE, 0);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win_right_word), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(scrolled_win_right_word), 75);
 
     g_queue_push_head(list, right_word);
     button_success = gtk_button_new_with_label("Подтвердить");
@@ -254,14 +276,14 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     fread(its, sizeof(struct Item), 1, question_word);
 
     if (*type_its == 1) {
-        gtk_label_set_text(GTK_LABEL(label_word), its->word);
+        gtk_label_set_text(GTK_LABEL(label_word), g_utf8_strup(its->word, -1));
         char bufer[130];
-        sprintf(bufer, "<span size=\"35000\">%s</span>", its->word);
+        sprintf(bufer, "<span size=\"35000\">%s</span>", g_utf8_strup(its->word, -1));
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
     } else {
-        gtk_label_set_text(GTK_LABEL(label_word), its->translation);
+        gtk_label_set_text(GTK_LABEL(label_word), g_utf8_strup(its->translation, -1));
         char bufer[130];
-        sprintf(bufer, "<span size=\"35000\">%s</span>", its->translation);
+        sprintf(bufer, "<span size=\"35000\">%s</span>", g_utf8_strup(its->translation, -1));
         gtk_label_set_markup(GTK_LABEL(label_word), bufer);
     }
 

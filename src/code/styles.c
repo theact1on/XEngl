@@ -79,6 +79,7 @@ GtkCssProvider* set_styles()
                 "font-size: 1.25rem;"
                 "color: #495057;"
                 "background-color: #fff;"
+                "background-blend-mode: color;"
                 "border: 1px solid #becad6;"
                 "box-shadow: none;"
                 "margin: 0;"
@@ -117,12 +118,9 @@ GtkCssProvider* set_styles()
                 "color: #007bff;"
             "}"
             "/* Меню тренировки */"
-            "label#label_question {"
+            "#scrolled_win_training {"
                 "color: #212529;"
                 "border: 5px dotted rgba(90, 97, 105, 0.5);"
-                "margin-right:2rem;"
-                "margin-left:2rem;"
-                "margin-bottom:2rem;"
             "}"
 
             "label#label_name_window_results {"
@@ -160,14 +158,6 @@ GtkCssProvider* set_styles()
             "#entry_answer_box {"
                 "margin-left: 10rem;"
                 "margin-right: 10rem;"
-            "}"
-
-            "#right_word_hide {"
-                "margin-top:8rem;"
-            "}"
-
-            "#right_word_unhide {"
-                "margin-top:5.6rem;"
             "}"
             
             "entry {"

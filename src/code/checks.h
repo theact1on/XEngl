@@ -6,8 +6,8 @@
 #include <string.h>
 #include <time.h>
 struct Item {
-    char word[100];
-    char translation[100];
+    char word[36];
+    char translation[36];
 };
 
 void button_compare(GtkWidget* widget, GQueue* list);
