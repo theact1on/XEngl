@@ -2,7 +2,7 @@
 
 _Bool check_valid_char(gint position, gchar character)
 {
-    gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`№;:?.<>,[]{}()-=/\"\\|";
+    gchar ignored_characters[] = "0123456789!@#$%^&*()_+'`;:?.<>,[]{}()=/\"\\|";
     for (int j = 0; j < strlen(ignored_characters); j++) {
         if (position == 0)
             if (character == ' ') {
@@ -85,11 +85,10 @@ void enter_compare(GtkWidget* widget, GQueue* list)
     } else {
         char bufer[130];
         if (*what_is == 1) {
-            sprintf(bufer, "<span size=\"30000\">%s</span>", its->translation);
+            sprintf(bufer, "<span size=\"30000\">%s</span>", g_utf8_strup(its->translation, -1));
         } else {
-            sprintf(bufer, "<span size=\"30000\">%s</span>", its->word);
+            sprintf(bufer, "<span size=\"30000\">%s</span>", g_utf8_strup(its->word, -1));
         }
-        gtk_widget_set_name(right_word, "right_word_unhide");
         gtk_label_set_markup(GTK_LABEL(right_word), bufer);
         gtk_widget_set_name(btn_success, "button_failed");
         gtk_widget_set_name(entry_label, "entry_failed");

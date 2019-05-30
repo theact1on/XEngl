@@ -240,9 +240,14 @@ void enter_translate_task(GtkBox* task_box, int N_WORDS, int* success_count_word
     gtk_widget_set_name(entry_answer_box, "entry_answer_box");
 
     right_word = gtk_label_new(NULL);
-    gtk_box_pack_start(GTK_BOX(entry_answer_box), right_word, FALSE, FALSE, 0);
 
-    gtk_widget_set_name(right_word, "right_word_hide");
+    scrolled_win_right_word = gtk_scrolled_window_new(NULL, NULL);
+
+    gtk_container_add(GTK_CONTAINER(scrolled_win_right_word), right_word);
+    gtk_widget_set_margin_top(scrolled_win_right_word, 75);
+    gtk_box_pack_start(GTK_BOX(entry_answer_box), scrolled_win_right_word, FALSE, FALSE, 0);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win_right_word), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(scrolled_win_right_word), 75);
 
     g_queue_push_head(list, right_word);
     button_success = gtk_button_new_with_label("Подтвердить");
