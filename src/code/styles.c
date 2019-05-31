@@ -86,6 +86,8 @@ GtkCssProvider* set_styles()
             "}"
             
             "treeview header button {"
+                "background-blend-mode:color;"
+                "border-width:0px;"
                 "padding-top:0.5rem;"
                 "padding-bottom:0.5rem;"
                 "font-size:1rem;"
@@ -95,6 +97,12 @@ GtkCssProvider* set_styles()
                 "background-color: #007bff;"
                 "border-color: #007bff;"
                 "box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05), 0 4px 10px rgba(0, 123, 255, 0.25);"
+            "}"
+
+            "treeview header button:active {"
+                "background-color: #84B7FF;"
+                "border-width:0px;"
+                
             "}"
             
             "treeview header button:first-child {"
